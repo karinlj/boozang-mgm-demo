@@ -1,0 +1,175 @@
+<template>
+  <!-- wait to render until we have the data from db -->
+  <div v-if="tester" class="edit_tester container">
+    <form @submit.prevent="editTester" class="card-panel">
+      <header class="edit_header">
+        <h4 class="center-align blue-text">{{ tester.firstname + " " + tester.lastname }}</h4>
+        <i class="material-icons red-text" @click="deleteTester(tester.id)">delete</i>
+      </header>
+
+      <div class="row">
+        <div class="field col s6">
+          <label for="firstname">Firstname</label>
+          <input type="text" name="firstname" v-model="tester.firstname" />
+        </div>
+        <div class="field col s6">
+          <label for="lastname">Lastname</label>
+          <input type="text" name="lastname" v-model="tester.lastname" />
+        </div>
+      </div>
+      <div class="row">
+        <div class="field col s6">
+          <label for="email">Email</label>
+          <input type="text" name="email" v-model="tester.email" />
+        </div>
+        <!-- outputting editable ingredients with input-element-->
+        <div class="field col s6">
+          <label for="">Projects</label>
+          <div class="projects" v-for="(project, index) in tester.projects" :key="index">
+            <span>{{ tester.projects[index].name }}</span>
+          </div>
+
+          <!-- <div v-for="(project, index) in tester.projects" :key="index">
+            <label for="project">Project</label> -->
+          <!-- must bind to something in data(): projects (not project) -->
+          <!-- <input type="text" name="project" v-model="tester.projects[index]" />
+          </div> -->
+        </div>
+        <!-- <div class="field add-project">
+            <label for="add-project">Project:</label>
+            <input
+              type="text"
+              name="add-project"
+              @keydown.enter.prevent="addProject"
+              v-model="anotherProject"
+            />
+          </div> -->
+      </div>
+      <div class="field center-align">
+        <p class="red-text" v-if="feedback">{{ feedback }}</p>
+        <button type="button" class="btn grey" @click="cancel">Cancel</button>
+        <button class="btn green accent-4" type="submit">
+          Update
+        </button>
+      </div>
+    </form>
+  </div>
+</template>
+
+<script>
+import slugify from "slugify";
+import db from "@/firebase/init";
+export default {
+  name: "EditTester",
+
+  data() {
+    return {
+      //store the db-answer from created() in tester
+      tester: null,
+      feedback: null,
+    };
+  },
+  methods: {
+    editTester() {
+      // // required???
+      if (this.tester.firstname && this.tester.lastname && this.tester.email) {
+        //create new slug with slugify
+        this.tester.slug = slugify(this.tester.firstname + this.tester.lastname, {
+          replacement: "-",
+          remove: /[$*_+~.()'"!:@]/g,
+          lower: true,
+        });
+        //console.log("slug", this.tester.slug);
+        this.feedback = null;
+
+        //get collection
+        db.collection("testers")
+          //grab the doc and update it
+          //this.tester.id = doc.id from created()
+          .doc(this.tester.id)
+          .update({
+            firstname: this.tester.firstname,
+            lastname: this.tester.lastname,
+            email: this.tester.email,
+            slug: this.tester.slug,
+          })
+          .then(() => {
+            this.$router.push({ name: "Home" });
+          });
+      } else {
+        this.feedback = "Please fill in full name and email.";
+      }
+    },
+    // addProject() {
+    //   if (this.anotherProject) {
+    //     this.tester.projects.push(this.anotherProject);
+    //     //console.log(this.tester.projects);
+    //     this.anotherProject = null;
+    //     this.feedback = null;
+    //   } else {
+    //     this.feedback = "Please enter a project.";
+    //   }
+    // },
+    // deleteProject() {
+    //   //hej
+    // },
+    cancel() {
+      this.$router.push({ name: "Home" });
+    },
+    deleteTester(id) {
+      // console.log("id", id);
+      db.collection("testers")
+        //ref to a doc with an id delete from db
+        .doc(id)
+        .delete()
+        .then(() => {
+          //delete from gui??
+          this.$router.push({ name: "Home" });
+        });
+    },
+  },
+  created() {
+    //1.  get data by the slug, we dont have the id
+    let ref = db.collection("testers").where("slug", "==", this.$route.params.tester_slug);
+    //get the data (should be just one, but still stored in a collection)
+    ref.get().then((snapshot) => {
+      snapshot.forEach((doc) => {
+        //update my empty tester-prop
+        this.tester = doc.data();
+        console.log("tester", this.tester);
+
+        //här får vi this.tester.id till editTester() ovan
+        //id is not in the data(), but in the doc
+        this.tester.id = doc.id;
+        //console.log("tester.id", this.tester.id);
+      });
+    });
+  },
+};
+</script>
+
+<style lang="scss">
+.edit_tester {
+  position: relative;
+  z-index: 1000;
+  margin-top: 60px;
+  max-width: 500px;
+  .edit_header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 0.5rem;
+    h4 {
+      margin: 0.8rem auto;
+    }
+  }
+  .field {
+    position: relative;
+  }
+  .btn {
+    margin-right: 2rem !important;
+  }
+  .projects {
+    height: 3rem;
+  }
+}
+</style>
