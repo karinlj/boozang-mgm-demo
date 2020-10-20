@@ -55,10 +55,12 @@
                 <tbody>
                   <tr v-for="(tester, index) in addedTesters" :key="index">
                     <td>
-                      <p class="btn btn-floating blue">{{ tester.name[0] }}</p>
+                      <p class="btn btn-floating blue">
+                        {{ tester.firstname[0] }}{{ tester.lastname[0] }}
+                      </p>
                     </td>
-                    <td>{{ tester.name }}</td>
-                    <td>{{ tester.role }}</td>
+                    <td>{{ tester.firstname }}</td>
+                    <td>{{ tester.projects[0].role }}</td>
                   </tr>
                 </tbody>
               </table>
@@ -106,12 +108,10 @@ export default {
           remove: /[$*_+~.()'"!:@]/g,
           lower: true,
         });
-        //console.log("slug", this.project.slug);
         this.feedback = null;
 
         //get collection
         db.collection("projects")
-          //grab the doc and update it
           //this.project.id = doc.id from created()
           .doc(this.project.id)
           .update({
@@ -131,30 +131,34 @@ export default {
       if (this.selectedTester) {
         this.feedback = null;
 
-        //find() hittar första som matchar
+        //om projekt-id:t redan finns på vald testare i db, men jag byter roll, så vill jag att rollen byts på projektet.
+        //om projekt-id:t redan finns på vald testare i db, så ska det inte gå att lägga till det projektet igen.
+
+        //hitta vald testare - find() hittar första som matchar
         let currentTester = this.testers.find((tester) => {
           return tester.id == this.selectedTester;
         });
-
         //console.log("currentTester", currentTester);
 
-        let projectsOnCurrentTester = currentTester.projects;
-        // console.log("projectsOnCurrentTester", projectsOnCurrentTester);
+        let currentProjects = currentTester.projects;
+        // console.log("currentProjects", currentProjects);
 
-        let foundProject = false;
+        let projectExists = false;
+        currentProjects.forEach((project) => {
+          //console.log("project", project);
 
-        projectsOnCurrentTester.forEach((project) => {
-          console.log("project", project);
           //kolla om project-id finns redan
           if (project.id == this.project.id) {
             project.role = this.selectedRole;
-            foundProject = true;
+            projectExists = true;
+            console.log("projectExists");
           }
         });
 
-        if (!foundProject) {
-          let newProjectOnCurrentTester = { id: this.selectedTester, role: this.selectedRole };
-          projectsOnCurrentTester.push(newProjectOnCurrentTester);
+        if (!projectExists) {
+          console.log("projectExists not");
+          let newProject = { id: this.project.id, role: this.selectedRole };
+          currentProjects.push(newProject);
           // this.addedTesters.push(this.selectedTester);
         }
 
@@ -162,17 +166,28 @@ export default {
           //grab the doc and update it
           .doc(this.selectedTester)
           .update({
-            projects: projectsOnCurrentTester,
+            projects: currentProjects,
           })
           .then(() => {
-            // console.log("selectedTester", this.selectedTester);
-            // this.addedTesters.push(this.selectedTester);
-            // this.selectedTester = {};
-            //this.$router.push({ name: "Home" });
+            this.updateTesterList();
           });
       } else {
         this.feedback = "Please choose Tester and Role.";
       }
+    },
+    updateTesterList() {
+      //hitta alla testare som har detta projektet
+      // console.log("this.testers", this.testers);
+      console.log("this.project.id", this.project.id);
+
+      this.addedTesters = this.testers.filter((tester) => {
+        return tester.projects.find((project) => {
+          return project.id == this.project.id;
+          //blir bara ett projekt ju per tester här
+        });
+      });
+      console.log("addedTesters", this.addedTesters);
+      //this.$router.push({ name: "Home" });
     },
     cancel() {
       this.$router.push({ name: "Home" });
@@ -201,6 +216,7 @@ export default {
           this.project = doc.data(); //all the data in this project
           //id is in the doc
           this.project.id = doc.id;
+          console.log("id", this.project.id);
         });
       });
 
@@ -218,6 +234,8 @@ export default {
           this.testers.push(tester);
           //  console.log("testers", this.testers);
         });
+        //för att ha fått testarna
+        this.updateTesterList();
       });
   },
 };
