@@ -59,6 +59,7 @@
 <script>
 import slugify from "slugify";
 import db from "@/firebase/init";
+import firebase from "firebase";
 export default {
   name: "EditTester",
 
@@ -82,7 +83,9 @@ export default {
         //console.log("slug", this.tester.slug);
         this.feedback = null;
 
-        //get collection
+        //sätt firebase timestamp
+        let myTimestamp = firebase.firestore.Timestamp.fromDate(new Date());
+
         db.collection("testers")
           //grab the doc and update it
           //this.tester.id = doc.id from created()
@@ -90,6 +93,7 @@ export default {
           .update({
             firstname: this.tester.firstname,
             lastname: this.tester.lastname,
+            latestActivity: myTimestamp,
             email: this.tester.email,
             slug: this.tester.slug,
           })

@@ -62,7 +62,6 @@ export default {
       width: 90%;
     }
   }
-
   .overflow-hidden {
     overflow: hidden;
   }

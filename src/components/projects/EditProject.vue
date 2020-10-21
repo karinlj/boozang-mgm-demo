@@ -1,15 +1,22 @@
 <template>
   <!-- wait to render until we have the data from db -->
   <div v-if="project" class="edit_project container">
-    <form @submit.prevent="editProject" class="card-panel">
+    <form @submit.prevent="updateProject" class="card-panel">
       <header class="edit_header">
         <h4 class="center-align purple-text">{{ project.name }}</h4>
-        <i class="material-icons red-text" @click="deleteProject(project.id)">delete</i>
+        <i class="material-icons red-text delete" @click="deleteProject(project.id)">delete</i>
       </header>
       <div class="row">
         <div class="field col s4">
-          <label for="name">Name</label>
-          <input type="text" name="name" v-model="project.name" />
+          <div class="name">
+            <label for="name">Name</label>
+            <input type="text" name="name" v-model="project.name" />
+          </div>
+          <div class="description">
+            <label for="description">Description</label>
+            <textarea name="description" class="materialize-textarea" v-model="project.description">
+            </textarea>
+          </div>
         </div>
         <div class="field col s7 offset-s1">
           <div class="row">
@@ -25,7 +32,6 @@
               </select>
             </div>
             <div class="field col s4">
-              <!-- add role -->
               <label for="role">Role</label>
               <select name="role" v-model="selectedRole">
                 <option value="" disabled selected>Choose role</option>
@@ -61,6 +67,9 @@
                     </td>
                     <td>{{ tester.firstname }}</td>
                     <td>{{ tester.projects[0].role }}</td>
+                    <td>
+                      <i class="material-icons red-text" @click="deleteTester(tester.id)">delete</i>
+                    </td>
                   </tr>
                 </tbody>
               </table>
@@ -82,6 +91,7 @@
 <script>
 import slugify from "slugify";
 import db from "@/firebase/init";
+import firebase from "firebase";
 export default {
   name: "EditProject",
 
@@ -99,69 +109,76 @@ export default {
     };
   },
   methods: {
-    editProject() {
+    updateProject() {
       // // required???
       if (this.project.name) {
-        //create new slug with slugify
+        //slug with slugify
         this.project.slug = slugify(this.project.name, {
           replacement: "-",
           remove: /[$*_+~.()'"!:@]/g,
           lower: true,
         });
         this.feedback = null;
+        //sätt firebase timestamp
+        let myTimestamp = firebase.firestore.Timestamp.fromDate(new Date());
+        console.log("Date", myTimestamp);
 
-        //get collection
+        //uppdatera detta projekt
         db.collection("projects")
           //this.project.id = doc.id from created()
           .doc(this.project.id)
           .update({
             name: this.project.name,
+            description: this.project.description,
+            lastUpdated: myTimestamp,
             slug: this.project.slug,
           })
           .then(() => {
             this.$router.push({ name: "Home" });
           });
       } else {
-        this.feedback = "Please fill in project name.";
+        this.$toastr.e("Please fill in project name.");
+        //this.feedback = "Please fill in project name.";
       }
     },
 
     updateTester() {
       //skicka project.id och roll till rätt testare.id
+      //om projekt-id:t redan finns på vald testare i db, men jag byter roll, byt rollen på projektet.
+      //om projekt-id:t redan finns på vald testare i db, så ska det inte gå att lägga till det projektet igen.
       if (this.selectedTester) {
         this.feedback = null;
 
-        //om projekt-id:t redan finns på vald testare i db, men jag byter roll, så vill jag att rollen byts på projektet.
-        //om projekt-id:t redan finns på vald testare i db, så ska det inte gå att lägga till det projektet igen.
-
-        //hitta vald testare - find() hittar första som matchar
+        //hitta vald testare i dropdown på id:t- find() hittar första som matchar
         let currentTester = this.testers.find((tester) => {
           return tester.id == this.selectedTester;
         });
         //console.log("currentTester", currentTester);
 
+        //vald testares projekt i db
         let currentProjects = currentTester.projects;
         // console.log("currentProjects", currentProjects);
 
         let projectExists = false;
+        //loopa vald testares projekt i db
         currentProjects.forEach((project) => {
           //console.log("project", project);
 
-          //kolla om project-id finns redan
+          //kolla om project-id redan finns i db
           if (project.id == this.project.id) {
+            //byt bara roll
             project.role = this.selectedRole;
             projectExists = true;
             console.log("projectExists");
           }
         });
-
+        //om projekt.id:t inte redan finns i db: pusha projektet till projektlistan
         if (!projectExists) {
           console.log("projectExists not");
           let newProject = { id: this.project.id, role: this.selectedRole };
           currentProjects.push(newProject);
-          // this.addedTesters.push(this.selectedTester);
         }
-
+        //uppdatera vald testares projektlista
         db.collection("testers")
           //grab the doc and update it
           .doc(this.selectedTester)
@@ -170,39 +187,107 @@ export default {
           })
           .then(() => {
             this.updateTesterList();
+            this.$toastr.s("Project updated");
           });
       } else {
-        this.feedback = "Please choose Tester and Role.";
+        this.$toastr.e("Please choose Tester and Role.");
+        // this.feedback = "Please choose Tester and Role.";
       }
     },
     updateTesterList() {
-      //hitta alla testare som har detta projektet
-      // console.log("this.testers", this.testers);
-      console.log("this.project.id", this.project.id);
+      //uppdatera GUI-listan med testare även när man laddar om och inte valt något nytt
+      //testare och projekt måste vara laddade för att listan ska finnas vid reload
+      //updateTesterList() kallas på i then() i updateTester() och i created() när testare är hämtade
 
+      //loopa igenom testarna i db
+      //kolla i respektive projektlista
+      //kolla om listan har detta projekt
+      //lägg dessa testare i GUI-listan
+      //annars loopa över listan med if-satser
+      //bara UI
       this.addedTesters = this.testers.filter((tester) => {
         return tester.projects.find((project) => {
           return project.id == this.project.id;
-          //blir bara ett projekt ju per tester här
+          //(blir bara ett projekt ju per tester här)
         });
       });
-      console.log("addedTesters", this.addedTesters);
-      //this.$router.push({ name: "Home" });
+      // console.log("addedTesters", this.addedTesters);
+    },
+    deleteTester(id) {
+      //hitta testare i GUI-listan man klickat på
+      let deletedTester = this.testers.find((tester) => {
+        return tester.id == id;
+      });
+      console.log("deletedTester", deletedTester);
+
+      //uppdatera testarens projektlista (ta bort detta projekt)
+      let testerProjects = deletedTester.projects.filter((project) => {
+        project.id !== this.project.id;
+      });
+      console.log("testerProjects", testerProjects);
+
+      //uppdatera testarens projektlista
+      db.collection("testers")
+        //grab the doc and update it
+        .doc(id)
+        .update({
+          projects: testerProjects,
+        })
+        .then(() => {
+          this.deleteTesterFromList(id);
+          this.$toastr.s("Project updated");
+        });
+    },
+    deleteTesterFromList(id) {
+      //uppdatera addedTesters
+      this.addedTesters = this.addedTesters.filter((tester) => {
+        //return bara de testare som inte har id:t vi klickat på
+        return tester.id !== id;
+      });
     },
     cancel() {
       this.$router.push({ name: "Home" });
     },
     deleteProject(id) {
-      //även på användaren ska det bort??
-      // console.log("id", id);
+      console.log("project.id", id);
+      //uppdatera projekt-tabellen
+      //uppdatera flera testares projektlista
+
       db.collection("projects")
-        //ref to a doc with an id delete from db
         .doc(id)
         .delete()
         .then(() => {
-          //delete from gui??
+          console.log("delete project");
           this.$router.push({ name: "Home" });
         });
+
+      // let testProjectList = [
+      //   { id: 1, role: "owner" },
+      //   { id: 2, role: "owner" },
+      // ];
+      // let testerProjects = this.testers[0].projects;
+      // let filteredProjects = testerProjects.filter((project) => {
+      //   return project.id !== 1;
+      // });
+      // console.log("filteredProjects", filteredProjects);
+
+      // // db.collection("testers")
+      // //   .document()
+      // //   .updateData({
+      // //     projects: FieldValue.arrayRemove([{}.remove(1)]),
+      // //   });
+
+      // //uppdatera testarens projektlista
+      // db.collection("testers")
+      //   .get()
+      //   .then(function(querySnapshot) {
+      //     console.log("querySnapshot", querySnapshot);
+      //     querySnapshot.forEach(function(doc) {
+      //       doc.ref.update({
+      //         projects: testProjectList,
+      //       });
+      //     });
+      //   });
     },
   },
   created() {
@@ -216,7 +301,7 @@ export default {
           this.project = doc.data(); //all the data in this project
           //id is in the doc
           this.project.id = doc.id;
-          console.log("id", this.project.id);
+          //console.log("id", this.project.id);
         });
       });
 
@@ -226,22 +311,37 @@ export default {
       .then((snapshot) => {
         snapshot.forEach((doc) => {
           let tester = doc.data(); //all the data in all testers
+          //lägger tillfälligt doc.id i testers för att ha tillgång till det även om det eg ligger en nivå upp
           tester.id = doc.id;
           //  console.log("id", tester.id);
-          // let testerId = doc.id; //all id:s in all testers
-          // console.log("id", testerId);
-          //lägger projekten i min data-prop
+          //lägger testarna i min data-prop
           this.testers.push(tester);
           //  console.log("testers", this.testers);
         });
-        //för att ha fått testarna
+        //teatare och projekt måste vara laddade för att listan ska finnas vid reload
         this.updateTesterList();
       });
+  },
+  mounted() {
+    // You are able to access plugin from everywhere via this.$toastr
+    this.$toastr.defaultPosition = "toast-top-right";
+    this.$toastr.defaultTimeout = 2000;
   },
 };
 </script>
 
 <style lang="scss">
+.toast-top-right {
+  top: 30px !important;
+  right: 12px;
+}
+.toast-error {
+  background-color: #f44336 !important;
+}
+.toast-success {
+  background-color: #00c853 !important;
+}
+
 .edit_project {
   position: relative;
   z-index: 1000;
@@ -254,9 +354,15 @@ export default {
     h4 {
       margin: 0.8rem auto;
     }
+    .delete {
+      cursor: pointer;
+    }
   }
   .field {
     position: relative;
+    .name {
+      margin-bottom: 3rem;
+    }
     .add-tester {
       margin-top: 2rem;
       cursor: pointer;
@@ -267,6 +373,9 @@ export default {
     }
     select {
       display: block;
+    }
+    textarea {
+      min-height: 6rem;
     }
   }
   footer {

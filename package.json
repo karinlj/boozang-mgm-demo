@@ -9,11 +9,12 @@
   },
   "dependencies": {
     "core-js": "^3.6.5",
-    "vue": "^2.6.11",
-    "vue-router": "latest",
     "firebase": "latest",
     "moment": "latest",
-    "slugify": "latest"
+    "slugify": "latest",
+    "vue": "^2.6.11",
+    "vue-router": "latest",
+    "vue-toastr": "^2.1.2"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "~4.5.0",

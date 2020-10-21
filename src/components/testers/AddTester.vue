@@ -33,7 +33,7 @@
 <script>
 import slugify from "slugify";
 import db from "@/firebase/init";
-
+import firebase from "firebase";
 export default {
   name: "AddTester",
 
@@ -61,12 +61,17 @@ export default {
         });
         //console.log("slug", this.tester.slug);
         this.feedback = null;
+
+        //sätt firebase timestamp
+        let myTimestamp = firebase.firestore.Timestamp.fromDate(new Date());
+
         //add to db
         db.collection("testers")
           .add({
             firstname: this.tester.firstname,
             lastname: this.tester.lastname,
             email: this.tester.email,
+            latestActivity: myTimestamp,
             slug: this.tester.slug,
             projects: [],
           })

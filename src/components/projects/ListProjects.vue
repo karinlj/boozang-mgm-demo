@@ -12,17 +12,18 @@
           <tr>
             <th></th>
             <th>Name</th>
+            <th>Last updated</th>
+            <th>#</th>
           </tr>
         </thead>
         <tbody>
           <tr v-for="project in projects" :key="project.id">
             <td>
-              <p class="btn btn-floating purple">
-                P
-              </p>
+              <p class="btn btn-floating purple">{{ project.name[0] }}{{ project.name[1] }}</p>
             </td>
             <td>{{ project.name }}</td>
-
+            <td class="last_updated">{{ formatDate(project.lastUpdated) }}</td>
+            <td class="number">number</td>
             <td>
               <router-link
                 :to="{
@@ -48,15 +49,16 @@ export default {
   data() {
     return {
       projects: [],
+      testers: [],
       feedback: null,
     };
   },
   methods: {
-    // formatDate(latestActivity) {
-    //   let date = new Date(latestActivity * 1000);
-    //   let format = date.toISOString().slice(0, 10);
-    //   return format;
-    // },
+    formatDate(lastUpdated) {
+      let date = new Date(lastUpdated * 1000);
+      let format = date.toISOString().slice(0, 10);
+      return format;
+    },
   },
 
   created() {
@@ -68,8 +70,21 @@ export default {
           // console.log("doc.data()", doc.data());
           // console.log("doc.id", doc.id);
           let project = doc.data(); //all the data
+          project.lastUpdated = project.lastUpdated.seconds;
           //lägger projekten i min data-prop
           this.projects.push(project);
+        });
+      });
+    //fetch whole testers collection
+    db.collection("testers")
+      .get()
+      .then((snapshot) => {
+        snapshot.forEach((doc) => {
+          let tester = doc.data(); //all the data in all testers
+          //lägger tillfälligt doc.id i testers för att ha tillgång till det även om det eg ligger en nivå upp
+          tester.id = doc.id;
+          this.testers.push(tester);
+          console.log("testers", this.testers);
         });
       });
   },
@@ -112,7 +127,11 @@ export default {
 
     td {
       padding: 10px 5px;
-      &.latest_activity {
+      &.last_updated {
+        color: #999;
+        font-size: 80%;
+      }
+      &.number {
         color: #999;
         font-size: 80%;
       }

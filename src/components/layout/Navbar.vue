@@ -48,6 +48,11 @@ export default {
       @media all and (min-width: 576px) {
         flex-direction: row;
       }
+      padding: 0 0.75rem;
+      max-width: 1300px;
+      @media all and (min-width: 993px) {
+        width: 90%;
+      }
     }
   }
 }
