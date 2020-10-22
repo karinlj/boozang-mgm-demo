@@ -1,4 +1,4 @@
-# Boozang Management Demo
+# Boozang Management prototype
 
 ## Description
 
