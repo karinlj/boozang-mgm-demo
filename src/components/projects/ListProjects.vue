@@ -23,7 +23,7 @@
             </td>
             <td>{{ project.name }}</td>
             <td class="last_updated">{{ formatDate(project.lastUpdated) }}</td>
-            <td class="number">number</td>
+            <td class="number">{{ numberoOfTesters(project.id) }}</td>
             <td>
               <router-link
                 :to="{
@@ -59,6 +59,23 @@ export default {
       let format = date.toISOString().slice(0, 10);
       return format;
     },
+    numberoOfTesters(projectId) {
+      //console.log("projectId", projectId);
+      //kolla vilka testare som har detta projekt
+      //loopa igenom testare,loopa igenom deras projekt, kolla vilka som har detta projekt.id
+      let testersOnProject = this.testers.filter((tester) => {
+        return tester.projects.find((project) => {
+          return project.id == projectId;
+        });
+      });
+      // console.log("testersOnProject", testersOnProject);
+      //return testersOnProject;
+
+      //kolla hur många testare som har detta projekt
+      let numberOfTesters = testersOnProject.length;
+      //console.log("numberOfTesters", numberOfTesters);
+      return numberOfTesters;
+    },
   },
 
   created() {
@@ -67,9 +84,9 @@ export default {
       .get()
       .then((snapshot) => {
         snapshot.forEach((doc) => {
-          // console.log("doc.data()", doc.data());
-          // console.log("doc.id", doc.id);
           let project = doc.data(); //all the data
+          //lägger in id:t i data() temporärt
+          project.id = doc.id;
           project.lastUpdated = project.lastUpdated.seconds;
           //lägger projekten i min data-prop
           this.projects.push(project);
@@ -84,7 +101,6 @@ export default {
           //lägger tillfälligt doc.id i testers för att ha tillgång till det även om det eg ligger en nivå upp
           tester.id = doc.id;
           this.testers.push(tester);
-          console.log("testers", this.testers);
         });
       });
   },
@@ -131,10 +147,10 @@ export default {
         color: #999;
         font-size: 80%;
       }
-      &.number {
-        color: #999;
-        font-size: 80%;
-      }
+      // &.number {
+      //   color: #999;
+      //   font-size: 80%;
+      // }
       .material-icons {
         font-size: 16px;
       }

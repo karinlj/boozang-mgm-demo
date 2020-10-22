@@ -121,7 +121,7 @@ export default {
         this.feedback = null;
         //sätt firebase timestamp
         let myTimestamp = firebase.firestore.Timestamp.fromDate(new Date());
-        console.log("Date", myTimestamp);
+        // console.log("Date", myTimestamp);
 
         //uppdatera detta projekt
         db.collection("projects")
@@ -174,7 +174,7 @@ export default {
         });
         //om projekt.id:t inte redan finns i db: pusha projektet till projektlistan
         if (!projectExists) {
-          console.log("projectExists not");
+          // console.log("projectExists not");
           let newProject = { id: this.project.id, role: this.selectedRole };
           currentProjects.push(newProject);
         }
@@ -218,13 +218,13 @@ export default {
       let deletedTester = this.testers.find((tester) => {
         return tester.id == id;
       });
-      console.log("deletedTester", deletedTester);
+      // console.log("deletedTester", deletedTester);
 
       //uppdatera testarens projektlista (ta bort detta projekt)
       let testerProjects = deletedTester.projects.filter((project) => {
         project.id !== this.project.id;
       });
-      console.log("testerProjects", testerProjects);
+      // console.log("testerProjects", testerProjects);
 
       //uppdatera testarens projektlista
       db.collection("testers")
@@ -249,7 +249,7 @@ export default {
       this.$router.push({ name: "Home" });
     },
     deleteProject(id) {
-      console.log("project.id", id);
+      // console.log("project.id", id);
       //uppdatera projekt-tabellen
       //uppdatera flera testares projektlista
 
@@ -257,7 +257,7 @@ export default {
         .doc(id)
         .delete()
         .then(() => {
-          console.log("delete project");
+          // console.log("delete project");
           this.$router.push({ name: "Home" });
         });
 
