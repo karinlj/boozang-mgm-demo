@@ -2,7 +2,7 @@
 
 ## Description
 
-Application for prototyping new Boozang Managment. Made with Vue.js and Firebase as backend.
+Application in progress for prototyping new Boozang Managment. Made with Vue.js and Firebase as backend.
 
 ![Screenshot](/src/assets/screenshot.jpg?raw=true "Screenshot")
 
