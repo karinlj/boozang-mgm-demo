@@ -1,24 +1,52 @@
-# boozang-mg-light
+# Boozang Management Demo
 
-## Project setup
+## Description
+
+Application for prototyping new Boozang Managment. Made with Vue.js and Firebase as backend.
+
+![Screenshot](/src/assets/screenshot.jpg?raw=true "Screenshot")
+
+## Prerequisites
+
+NodeJS
+
+## Installation
+
+To clone
+
+`git clone https://github.com/karinlj/boozang-mgm-demo.git`
+
 ```
 npm install
 ```
 
-### Compiles and hot-reloads for development
+## Compiles and hot-reloads for development
+
 ```
 npm run serve
 ```
 
-### Compiles and minifies for production
+## To build
+
 ```
 npm run build
 ```
 
-### Lints and fixes files
-```
-npm run lint
-```
+Then use the dist folder you get.
 
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
+## Built With
+
+- vue.js
+- CSS
+- Materialize.css
+- Firebase
+
+## Author
+
+- **Karin Ljunggren** - [karinlj](https://github.com/karinlj)
+
+## Acknowledgements
+
+Thank's to The Net Ninja.  
+Course: Build Web Apps with Vue JS 2 & Firebase  
+`https://www.udemy.com/course/build-web-apps-with-vuejs-firebase/`
