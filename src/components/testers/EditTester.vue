@@ -22,36 +22,38 @@
           <label for="email">Email</label>
           <input type="text" name="email" v-model="tester.email" />
         </div>
-        <!-- outputting editable ingredients with input-element-->
         <div class="field col s6">
           <label for="">Projects</label>
-          <div class="projects" v-for="(project, index) in tester.projects" :key="index">
-            <span>{{ tester.projects[index].name }}</span>
-          </div>
+          <table id="projects_table" class="responsive-table striped">
+            <thead>
+              <tr>
+                <th></th>
+                <th>Name</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="(project, index) in tester.projects" :key="index">
+                <td>
+                  <p class="btn btn-floating purple">{{ project.name[0] }}{{ project.name[1] }}</p>
+                </td>
+                <td>{{ project.name }}</td>
+              </tr>
+            </tbody>
+          </table>
 
-          <!-- <div v-for="(project, index) in tester.projects" :key="index">
-            <label for="project">Project</label> -->
-          <!-- must bind to something in data(): projects (not project) -->
-          <!-- <input type="text" name="project" v-model="tester.projects[index]" />
+          <!-- <label for="">Projects</label>
+          <div class="projects" v-for="(project, index) in tester.projects" :key="index">
+            <span>{{ project.name }}</span>
           </div> -->
         </div>
-        <!-- <div class="field add-project">
-            <label for="add-project">Project:</label>
-            <input
-              type="text"
-              name="add-project"
-              @keydown.enter.prevent="addProject"
-              v-model="anotherProject"
-            />
-          </div> -->
       </div>
-      <div class="field center-align">
+      <footer class="field center-align">
         <p class="red-text" v-if="feedback">{{ feedback }}</p>
         <button type="button" class="btn grey" @click="cancel">Cancel</button>
         <button class="btn green accent-4" type="submit">
           Update
         </button>
-      </div>
+      </footer>
     </form>
   </div>
 </template>
@@ -104,26 +106,13 @@ export default {
         this.feedback = "Please fill in full name and email.";
       }
     },
-    // addProject() {
-    //   if (this.anotherProject) {
-    //     this.tester.projects.push(this.anotherProject);
-    //     //console.log(this.tester.projects);
-    //     this.anotherProject = null;
-    //     this.feedback = null;
-    //   } else {
-    //     this.feedback = "Please enter a project.";
-    //   }
-    // },
-    // deleteProject() {
-    //   //hej
-    // },
     cancel() {
       this.$router.push({ name: "Home" });
     },
     deleteTester(id) {
       // console.log("id", id);
       db.collection("testers")
-        //ref to a doc with an id delete from db
+        //ref to a doc with an id, delete from db
         .doc(id)
         .delete()
         .then(() => {
@@ -135,12 +124,12 @@ export default {
   created() {
     //1.  get data by the slug, we dont have the id
     let ref = db.collection("testers").where("slug", "==", this.$route.params.tester_slug);
-    //get the data (should be just one, but still stored in a collection)
+    //get the data (should be just one, but in a collection)
     ref.get().then((snapshot) => {
       snapshot.forEach((doc) => {
         //update my empty tester-prop
         this.tester = doc.data();
-        console.log("tester", this.tester);
+        //  console.log("tester", this.tester);
 
         //här får vi this.tester.id till editTester() ovan
         //id is not in the data(), but in the doc
@@ -157,7 +146,7 @@ export default {
   position: relative;
   z-index: 1000;
   margin-top: 60px;
-  max-width: 500px;
+  max-width: 800px;
   .edit_header {
     display: flex;
     justify-content: space-between;
@@ -166,14 +155,41 @@ export default {
       margin: 0.8rem auto;
     }
   }
+  footer {
+    margin-top: 4rem;
+  }
   .field {
     position: relative;
   }
   .btn {
     margin-right: 2rem !important;
   }
-  .projects {
-    height: 3rem;
+
+  #projects_table {
+    tr {
+      .edit {
+        font-size: 20px;
+      }
+    }
+    th {
+      color: #999;
+      font-size: 80%;
+      padding: 10px 5px;
+    }
+
+    td {
+      padding: 10px 5px;
+      .material-icons {
+        font-size: 16px;
+      }
+    }
+    .btn-floating {
+      width: 30px;
+      height: 30px;
+      line-height: 30px;
+      font-size: 12px;
+      margin: 0;
+    }
   }
 }
 </style>

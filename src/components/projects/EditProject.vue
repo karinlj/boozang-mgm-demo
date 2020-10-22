@@ -175,7 +175,11 @@ export default {
         //om projekt.id:t inte redan finns i db: pusha projektet till projektlistan
         if (!projectExists) {
           // console.log("projectExists not");
-          let newProject = { id: this.project.id, role: this.selectedRole };
+          let newProject = {
+            id: this.project.id,
+            name: this.project.name,
+            role: this.selectedRole,
+          };
           currentProjects.push(newProject);
         }
         //uppdatera vald testares projektlista
