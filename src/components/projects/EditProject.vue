@@ -103,7 +103,6 @@ export default {
       testers: [],
       selectedTester: null,
       selectedRole: null,
-
       roles: ["CI", "Owner", "Viewer", "Developer", "Architect", "Team Lead", "QA"],
       addedTesters: [],
     };

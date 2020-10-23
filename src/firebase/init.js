@@ -1,4 +1,5 @@
 import firebase from "firebase";
+
 /* eslint-disable no-unused-vars */
 import firestore from "firebase/firestore";
 // Your web app's Firebase configuration

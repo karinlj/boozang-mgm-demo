@@ -60,16 +60,18 @@ export default {
       return format;
     },
     numberoOfTesters(projectId) {
+      //i HTML: loopar över project collection
+      //ett projekt-id, en testare
       //console.log("projectId", projectId);
       //kolla vilka testare som har detta projekt
       //loopa igenom testare,loopa igenom deras projekt, kolla vilka som har detta projekt.id
+      //i koden: loopa över testare
       let testersOnProject = this.testers.filter((tester) => {
         return tester.projects.find((project) => {
           return project.id == projectId;
         });
       });
       // console.log("testersOnProject", testersOnProject);
-      //return testersOnProject;
 
       //kolla hur många testare som har detta projekt
       let numberOfTesters = testersOnProject.length;
@@ -79,7 +81,7 @@ export default {
   },
 
   created() {
-    //fetch data from firestore
+    //fetch projects firestore
     db.collection("projects")
       .get()
       .then((snapshot) => {

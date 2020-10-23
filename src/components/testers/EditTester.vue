@@ -29,22 +29,20 @@
               <tr>
                 <th></th>
                 <th>Name</th>
+                <th>Role</th>
               </tr>
             </thead>
             <tbody>
-              <tr v-for="(project, index) in tester.projects" :key="index">
+              <!-- <div @click="findProjects">Projekt</div> -->
+              <tr v-for="(project, index) in projectsOnHugo" :key="index">
                 <td>
                   <p class="btn btn-floating purple">{{ project.name[0] }}{{ project.name[1] }}</p>
                 </td>
                 <td>{{ project.name }}</td>
+                <td>{{ project.role }}</td>
               </tr>
             </tbody>
           </table>
-
-          <!-- <label for="">Projects</label>
-          <div class="projects" v-for="(project, index) in tester.projects" :key="index">
-            <span>{{ project.name }}</span>
-          </div> -->
         </div>
       </div>
       <footer class="field center-align">
@@ -69,10 +67,44 @@ export default {
     return {
       //store the db-answer from created() in tester
       tester: null,
+      projects: [],
       feedback: null,
+      projectsOnHugo: [],
     };
   },
   methods: {
+    findProjects() {
+      //make new array of Hugo's project.id:s
+      // let projectIdsOnHugo = this.tester.projects.map((project) => {
+      //   return project.id;
+      // });
+      // console.log("projectIdsOnHugo[0]", projectIdsOnHugo[0]);
+
+      //löpa över hugo's id:n för att hämta namn från projekt-tabell
+      // for (let i = 0; i < projectIdsOnHugo.length; i++) {
+      //   // console.log("index", projectIdsOnHugo[i]);
+      //   let project = this.projects.find((project) => {
+      //     return project.id === projectIdsOnHugo[i];
+      //   });
+      //   console.log("project.name", project.name);
+      // }
+      //let projectsOnHugo = [];
+
+      let projectsOnOtto = this.tester.projects.map((project) => {
+        return project;
+      });
+      console.log("projectsOnOtto", projectsOnOtto);
+
+      projectsOnOtto.forEach((item) => {
+        let project = this.projects.find((project) => {
+          return project.id === item.id;
+        });
+        //console.log("project.name", project.name);
+        this.projectsOnHugo.push({ name: project.name, role: item.role });
+      });
+      console.log("projectsOnHugo", this.projectsOnHugo);
+      //  return projectsOnHugo;
+    },
     editTester() {
       // // required???
       if (this.tester.firstname && this.tester.lastname && this.tester.email) {
@@ -98,6 +130,7 @@ export default {
             latestActivity: myTimestamp,
             email: this.tester.email,
             slug: this.tester.slug,
+            //projects:
           })
           .then(() => {
             this.$router.push({ name: "Home" });
@@ -122,7 +155,7 @@ export default {
     },
   },
   created() {
-    //1.  get data by the slug, we dont have the id
+    //1.  get tester by the slug, we dont have the id
     let ref = db.collection("testers").where("slug", "==", this.$route.params.tester_slug);
     //get the data (should be just one, but in a collection)
     ref.get().then((snapshot) => {
@@ -130,13 +163,24 @@ export default {
         //update my empty tester-prop
         this.tester = doc.data();
         //  console.log("tester", this.tester);
-
         //här får vi this.tester.id till editTester() ovan
-        //id is not in the data(), but in the doc
         this.tester.id = doc.id;
         //console.log("tester.id", this.tester.id);
       });
     });
+    //fetch projects firestore
+    db.collection("projects")
+      .get()
+      .then((snapshot) => {
+        snapshot.forEach((doc) => {
+          let project = doc.data(); //all the data
+          //lägger in id:t i data() temporärt
+          project.id = doc.id;
+          this.projects.push(project);
+        });
+        //console.log("projects", this.projects);
+        this.findProjects();
+      });
   },
 };
 </script>

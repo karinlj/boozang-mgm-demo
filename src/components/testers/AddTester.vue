@@ -1,7 +1,7 @@
 <template>
   <div class="add_tester container">
     <form @submit.prevent="addTester" class="card-panel">
-      <h4 class="center-align blue-text">Add tester</h4>
+      <h4 class="center-align blue-text">Add Team member</h4>
 
       <div class="row">
         <div class="field col s6">

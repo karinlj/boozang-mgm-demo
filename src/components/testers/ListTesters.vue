@@ -2,9 +2,9 @@
   <div class="card">
     <div class="card-content">
       <header class="list_header">
-        <h5 class="blue-text">Boozang testers</h5>
+        <h5 class="blue-text">Team members</h5>
         <router-link :to="{ name: 'AddTester' }" class="btn-small green accent-4">
-          Add tester
+          Add Team member
         </router-link>
       </header>
       <table id="testers_table" class="responsive-table striped">
