@@ -7,7 +7,7 @@
           Add Team member
         </router-link>
       </header>
-      <table id="testers_table" class="responsive-table striped">
+      <table id="dashboard_table" class="responsive-table striped">
         <thead>
           <tr>
             <th></th>
@@ -24,7 +24,7 @@
               </p>
             </td>
             <td>{{ tester.firstname }} {{ tester.lastname }}</td>
-            <td class="latest_activity">{{ formatDate(tester.latestActivity) }}</td>
+            <td class="timestamp">{{ formatDate(tester.latestActivity) }}</td>
             <td>
               <!-- dynamic class set in method -->
               <i class="material-icons" :class="calculateStatus(tester.latestActivity)"
@@ -127,70 +127,26 @@ export default {
 </script>
 
 <style lang="scss">
-.card {
-  height: 350px;
-  overflow: auto;
-  border-radius: 5px;
-  .list_header {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 0.5rem;
-  }
-  #testers_table {
-    tr {
-      cursor: pointer;
-      .edit {
-        font-size: 20px;
-      }
-    }
-    th {
-      color: #999;
-      font-size: 80%;
-      padding: 10px 5px;
-      //font-weight: 400;
-    }
-
-    td {
-      padding: 10px 5px;
-      &.latest_activity {
-        color: #999;
-        font-size: 80%;
-      }
-      .material-icons {
-        font-size: 16px;
-      }
-    }
-    .btn-floating {
-      width: 30px;
-      height: 30px;
-      line-height: 30px;
-      font-size: 12px;
-    }
-  }
-  h5 {
-    margin-top: 0;
-  }
-  // .test {
-  //   span {
-  //     display: inline-block;
-  //     padding: 0.5rem;
-  //     color: white;
-  //     background: red;
-  //     margin-bottom: 2rem;
-  //   }
-  //   .availableClass {
-  //     span {
-  //       background: green;
-  //     }
-  //   }
-  //   .nearbyClass {
-  //     span {
-  //       &:after {
-  //         content: "nearby";
-  //         margin-left: 10px;
-  //       }
-  //     }
-  //   }
-  // }
-}
+// .test {
+//   span {
+//     display: inline-block;
+//     padding: 0.5rem;
+//     color: white;
+//     background: red;
+//     margin-bottom: 2rem;
+//   }
+//   .availableClass {
+//     span {
+//       background: green;
+//     }
+//   }
+//   .nearbyClass {
+//     span {
+//       &:after {
+//         content: "nearby";
+//         margin-left: 10px;
+//       }
+//     }
+//   }
+// }
 </style>

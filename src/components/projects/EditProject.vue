@@ -1,6 +1,6 @@
 <template>
   <!-- wait to render until we have the data from db -->
-  <div v-if="project" class="edit_project container">
+  <div v-if="project" class="edit_comp edit_project container">
     <form @submit.prevent="updateProject" class="card-panel">
       <header class="edit_header">
         <h4 class="center-align purple-text">{{ project.name }}</h4>
@@ -50,7 +50,7 @@
           <div class="row">
             <div class="field col s10">
               <label for="">Added testers: </label>
-              <table id="added_testers" class="responsive-table striped">
+              <table id="dashboard_table" class="responsive-table striped">
                 <thead>
                   <tr>
                     <th></th>
@@ -163,7 +163,7 @@ export default {
         currentProjects.forEach((project) => {
           //console.log("project", project);
 
-          //kolla om project-id redan finns i db
+          //kolla om project.id redan finns i db
           if (project.id == this.project.id) {
             //byt bara roll
             project.role = this.selectedRole;
@@ -189,7 +189,7 @@ export default {
             projects: currentProjects,
           })
           .then(() => {
-            this.updateTesterList();
+            this.updateTesterUiList();
             this.$toastr.s("Project updated");
           });
       } else {
@@ -197,17 +197,16 @@ export default {
         // this.feedback = "Please choose Tester and Role.";
       }
     },
-    updateTesterList() {
+    updateTesterUiList() {
       //uppdatera GUI-listan med testare även när man laddar om och inte valt något nytt
       //testare och projekt måste vara laddade för att listan ska finnas vid reload
-      //updateTesterList() kallas på i then() i updateTester() och i created() när testare är hämtade
+      //updateTesterUiList() kallas på i then() i updateTester() och i created() när testare är hämtade
 
       //loopa igenom testarna i db
-      //kolla i respektive projektlista
-      //kolla om listan har detta projekt
+      //kolla i respektive projektlista om den har detta projekt
       //lägg dessa testare i GUI-listan
       //annars loopa över listan med if-satser
-      //bara UI
+      //bara output i UI
       this.addedTesters = this.testers.filter((tester) => {
         return tester.projects.find((project) => {
           return project.id == this.project.id;
@@ -237,11 +236,11 @@ export default {
           projects: testerProjects,
         })
         .then(() => {
-          this.deleteTesterFromList(id);
+          this.deleteTesterFromUiList(id);
           this.$toastr.s("Project updated");
         });
     },
-    deleteTesterFromList(id) {
+    deleteTesterFromUiList(id) {
       //uppdatera addedTesters
       this.addedTesters = this.addedTesters.filter((tester) => {
         //return bara de testare som inte har id:t vi klickat på
@@ -317,12 +316,11 @@ export default {
           //lägger tillfälligt doc.id i testers för att ha tillgång till det även om det eg ligger en nivå upp
           tester.id = doc.id;
           //  console.log("id", tester.id);
-          //lägger testarna i min data-prop
           this.testers.push(tester);
           //  console.log("testers", this.testers);
         });
         //teatare och projekt måste vara laddade för att listan ska finnas vid reload
-        this.updateTesterList();
+        this.updateTesterUiList();
       });
   },
   mounted() {
@@ -334,87 +332,20 @@ export default {
 </script>
 
 <style lang="scss">
-.toast-top-right {
-  top: 30px !important;
-  right: 12px;
-}
-.toast-error {
-  background-color: #f44336 !important;
-}
-.toast-success {
-  background-color: #00c853 !important;
-}
-
 .edit_project {
-  position: relative;
-  z-index: 1000;
-  margin-top: 60px;
-  margin-bottom: 25rem;
-  .edit_header {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 0.5rem;
-    h4 {
-      margin: 0.8rem auto;
-    }
-    .delete {
-      cursor: pointer;
-    }
+  .name {
+    margin-bottom: 3rem;
   }
-  .field {
-    position: relative;
-    .name {
-      margin-bottom: 3rem;
-    }
-    .add-tester {
-      margin-top: 2rem;
-      cursor: pointer;
-      font-size: 30px;
-    }
-    .btn {
-      margin-right: 2rem !important;
-    }
-    select {
-      display: block;
-    }
-    textarea {
-      min-height: 6rem;
-    }
+  .add-tester {
+    margin-top: 2rem;
+    cursor: pointer;
+    font-size: 30px;
   }
-  footer {
-    margin-top: 4rem;
+  select {
+    display: block;
   }
-  #added_testers {
-    tr {
-      cursor: pointer;
-      .edit {
-        font-size: 20px;
-      }
-    }
-    th {
-      color: #999;
-      font-size: 80%;
-      padding: 10px 5px;
-      //font-weight: 400;
-    }
-
-    td {
-      padding: 10px 5px;
-      &.latest_activity {
-        color: #999;
-        font-size: 80%;
-      }
-      .material-icons {
-        font-size: 16px;
-      }
-    }
-    .btn-floating {
-      width: 30px;
-      height: 30px;
-      line-height: 30px;
-      font-size: 12px;
-      margin: 0;
-    }
+  textarea {
+    min-height: 6rem;
   }
 }
 </style>

@@ -7,7 +7,7 @@
           Add project
         </router-link>
       </header>
-      <table id="projects_table" class="responsive-table striped">
+      <table id="dashboard_table" class="responsive-table striped">
         <thead>
           <tr>
             <th></th>
@@ -22,8 +22,8 @@
               <p class="btn btn-floating purple">{{ project.name[0] }}{{ project.name[1] }}</p>
             </td>
             <td>{{ project.name }}</td>
-            <td class="last_updated">{{ formatDate(project.lastUpdated) }}</td>
-            <td class="number">{{ numberoOfTesters(project.id) }}</td>
+            <td class="timestamp">{{ formatDate(project.lastUpdated) }}</td>
+            <td class="">{{ numberoOfTesters(project.id) }}</td>
             <td>
               <router-link
                 :to="{
@@ -119,53 +119,4 @@ export default {
 };
 </script>
 
-<style lang="scss">
-.card {
-  height: 350px;
-  overflow: auto;
-  border-radius: 5px;
-  .list_header {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 0.5rem;
-  }
-  #projects_table {
-    tr {
-      cursor: pointer;
-      .edit {
-        font-size: 20px;
-      }
-    }
-    th {
-      color: #999;
-      font-size: 80%;
-      padding: 10px 5px;
-      //font-weight: 400;
-    }
-
-    td {
-      padding: 10px 5px;
-      &.last_updated {
-        color: #999;
-        font-size: 80%;
-      }
-      // &.number {
-      //   color: #999;
-      //   font-size: 80%;
-      // }
-      .material-icons {
-        font-size: 16px;
-      }
-    }
-    .btn-floating {
-      width: 30px;
-      height: 30px;
-      line-height: 30px;
-      font-size: 12px;
-    }
-  }
-  h5 {
-    margin-top: 0;
-  }
-}
-</style>
+<style lang="scss"></style>

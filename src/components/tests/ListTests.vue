@@ -4,7 +4,7 @@
       <header class="list_header">
         <h5 class="cyan-text">Test executions</h5>
       </header>
-      <table id="testers_table" class="responsive-table striped">
+      <table id="dashboard_table" class="responsive-table striped">
         <thead>
           <tr>
             <th>Name</th>
@@ -23,8 +23,8 @@
                 >fiber_manual_record</i
               >
             </td>
-            <td class="duration">{{ secondsToMinutes(test.duration) }}</td>
-            <td class="latest_execution">{{ formatDate(test.latestExecution) }}</td>
+            <td class="timestamp">{{ secondsToMinutes(test.duration) }}</td>
+            <td class="timestamp">{{ formatDate(test.latestExecution) }}</td>
             <td>
               <p class="btn btn-floating purple">
                 {{ getProject(test.projectId) }}
@@ -125,53 +125,4 @@ export default {
 };
 </script>
 
-<style lang="scss">
-.card {
-  height: 350px;
-  overflow: auto;
-  border-radius: 5px;
-  .list_header {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 0.5rem;
-  }
-  #testers_table {
-    tr {
-      cursor: pointer;
-      .edit {
-        font-size: 20px;
-      }
-    }
-    th {
-      color: #999;
-      font-size: 80%;
-      padding: 10px 5px;
-      //font-weight: 400;
-    }
-
-    td {
-      padding: 10px 5px;
-      &.latest_execution {
-        color: #999;
-        font-size: 80%;
-      }
-      &.duration {
-        color: #999;
-        font-size: 80%;
-      }
-      .material-icons {
-        font-size: 16px;
-      }
-    }
-    .btn-floating {
-      width: 30px;
-      height: 30px;
-      line-height: 30px;
-      font-size: 12px;
-    }
-  }
-  h5 {
-    margin-top: 0;
-  }
-}
-</style>
+<style lang="scss"></style>

@@ -27,6 +27,82 @@ body {
     //     width: 90%;
     //   }
     // }
+    .toast-top-right {
+      top: 30px !important;
+      right: 12px;
+    }
+    .toast-error {
+      background-color: #f44336 !important;
+    }
+    .toast-success {
+      background-color: #00c853 !important;
+    }
+    .card {
+      height: 350px;
+      overflow: auto;
+      border-radius: 5px;
+      .list_header {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 0.5rem;
+        h5 {
+          margin-top: 0;
+        }
+      }
+    }
+    .edit_comp {
+      position: relative;
+      z-index: 1000;
+      margin-top: 60px;
+      max-width: 800px;
+      .edit_header {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 0.5rem;
+        h4 {
+          margin: 0.8rem auto;
+        }
+      }
+      .field {
+        position: relative;
+      }
+      footer {
+        margin-top: 4rem;
+        .btn {
+          margin-right: 2rem !important;
+        }
+      }
+    }
+    #dashboard_table {
+      tr {
+        .edit {
+          font-size: 20px;
+        }
+      }
+      th {
+        color: #999;
+        font-size: 80%;
+        padding: 10px 5px;
+      }
+
+      td {
+        padding: 10px 5px;
+        &.timestamp {
+          color: #999;
+          font-size: 80%;
+        }
+        .material-icons {
+          font-size: 16px;
+        }
+      }
+      .btn-floating {
+        width: 30px;
+        height: 30px;
+        line-height: 30px;
+        font-size: 12px;
+        margin: 0;
+      }
+    }
   }
 
   ::-webkit-scrollbar-track {

@@ -1,6 +1,6 @@
 <template>
   <!-- wait to render until we have the data from db -->
-  <div v-if="tester" class="edit_tester container">
+  <div v-if="tester" class="edit_comp container">
     <form @submit.prevent="editTester" class="card-panel">
       <header class="edit_header">
         <h4 class="center-align blue-text">{{ tester.firstname + " " + tester.lastname }}</h4>
@@ -24,7 +24,7 @@
         </div>
         <div class="field col s6">
           <label for="">Projects</label>
-          <table id="projects_table" class="responsive-table striped">
+          <table id="dashboard_table" class="responsive-table striped">
             <thead>
               <tr>
                 <th></th>
@@ -182,55 +182,4 @@ export default {
 };
 </script>
 
-<style lang="scss">
-.edit_tester {
-  position: relative;
-  z-index: 1000;
-  margin-top: 60px;
-  max-width: 800px;
-  .edit_header {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 0.5rem;
-    h4 {
-      margin: 0.8rem auto;
-    }
-  }
-  footer {
-    margin-top: 4rem;
-  }
-  .field {
-    position: relative;
-  }
-  .btn {
-    margin-right: 2rem !important;
-  }
-
-  #projects_table {
-    tr {
-      .edit {
-        font-size: 20px;
-      }
-    }
-    th {
-      color: #999;
-      font-size: 80%;
-      padding: 10px 5px;
-    }
-
-    td {
-      padding: 10px 5px;
-      .material-icons {
-        font-size: 16px;
-      }
-    }
-    .btn-floating {
-      width: 30px;
-      height: 30px;
-      line-height: 30px;
-      font-size: 12px;
-      margin: 0;
-    }
-  }
-}
-</style>
+<style lang="scss"></style>
