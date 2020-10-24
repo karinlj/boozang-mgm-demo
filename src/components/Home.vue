@@ -19,11 +19,7 @@
           </div>
         </div>
         <div class="col s12 m6 l3">
-          <div class="card">
-            <div class="card-content">
-              <h5 class="pink-text">Some content here</h5>
-            </div>
-          </div>
+          <License></License>
         </div>
         <div class="col s12 m6">
           <ListTests></ListTests>
@@ -37,12 +33,14 @@
 import ListTesters from "./testers/ListTesters";
 import ListProjects from "./projects/ListProjects";
 import ListTests from "./tests/ListTests";
+import License from "./License";
 export default {
   name: "Home",
   components: {
     ListTesters,
     ListProjects,
     ListTests,
+    License,
   },
   data() {
     return {};
