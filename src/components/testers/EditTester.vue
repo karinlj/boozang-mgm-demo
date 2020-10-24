@@ -33,8 +33,7 @@
               </tr>
             </thead>
             <tbody>
-              <!-- <div @click="findProjects">Projekt</div> -->
-              <tr v-for="(project, index) in projectsOnHugo" :key="index">
+              <tr v-for="(project, index) in projectsOnTester" :key="index">
                 <td>
                   <p class="btn btn-floating purple">{{ project.name[0] }}{{ project.name[1] }}</p>
                 </td>
@@ -69,41 +68,39 @@ export default {
       tester: null,
       projects: [],
       feedback: null,
-      projectsOnHugo: [],
+      projectsOnTester: [],
     };
   },
   methods: {
     findProjects() {
-      //make new array of Hugo's project.id:s
-      // let projectIdsOnHugo = this.tester.projects.map((project) => {
-      //   return project.id;
-      // });
-      // console.log("projectIdsOnHugo[0]", projectIdsOnHugo[0]);
+      //hela gui-tabellen
+      //löpa över hugo's alla projekt för att hämta projekt från projekt-tabell
 
-      //löpa över hugo's id:n för att hämta namn från projekt-tabell
-      // for (let i = 0; i < projectIdsOnHugo.length; i++) {
-      //   // console.log("index", projectIdsOnHugo[i]);
-      //   let project = this.projects.find((project) => {
-      //     return project.id === projectIdsOnHugo[i];
+      // console.log("this.tester.projects", this.tester.projects);
+      // console.log("this.tester.projects[0]", this.tester.projects[0]);
+
+      //1. löpa över hugo's alla projekt
+      // for (let i = 0; i < this.tester.projects.length; i++) {
+      //   //console.log("this.tester.projects-index", this.tester.projects[i]);
+      //   //2. löpa över alla projekt i projekt-tabell, lägg i variabel
+      //   //3. hitta projekt med samma id som projectsOnTester[i]
+      //   let projectInTable = this.projects.find((item) => {
+      //     return item.id === this.tester.projects[i].id;
       //   });
-      //   console.log("project.name", project.name);
+      //   console.log("projectInTable", projectInTable);
       // }
-      //let projectsOnHugo = [];
 
-      let projectsOnOtto = this.tester.projects.map((project) => {
-        return project;
-      });
-      console.log("projectsOnOtto", projectsOnOtto);
-
-      projectsOnOtto.forEach((item) => {
+      //1. löpa över hugo's alla projekt
+      this.tester.projects.forEach((item) => {
+        //2. löpa över alla projekt i projekt-tabell, lägg i variabel
         let project = this.projects.find((project) => {
+          //3. hitta projekt med samma id som item
           return project.id === item.id;
         });
         //console.log("project.name", project.name);
-        this.projectsOnHugo.push({ name: project.name, role: item.role });
+        this.projectsOnTester.push({ name: project.name, role: item.role });
       });
-      console.log("projectsOnHugo", this.projectsOnHugo);
-      //  return projectsOnHugo;
+      // console.log("projectsOnTester", this.projectsOnTester);
     },
     editTester() {
       // // required???
