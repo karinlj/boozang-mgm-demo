@@ -76,7 +76,6 @@ export default {
       //hela gui-tabellen
       //löpa över hugo's alla projekt för att hämta projekt från projekt-tabell
 
-      // console.log("this.tester.projects", this.tester.projects);
       // console.log("this.tester.projects[0]", this.tester.projects[0]);
 
       //1. löpa över hugo's alla projekt
@@ -146,7 +145,6 @@ export default {
         .doc(id)
         .delete()
         .then(() => {
-          //delete from gui??
           this.$router.push({ name: "Home" });
         });
     },
@@ -157,7 +155,6 @@ export default {
     //get the data (should be just one, but in a collection)
     ref.get().then((snapshot) => {
       snapshot.forEach((doc) => {
-        //update my empty tester-prop
         this.tester = doc.data();
         //  console.log("tester", this.tester);
         //här får vi this.tester.id till editTester() ovan

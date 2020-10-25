@@ -25,7 +25,7 @@
             <td><span>Actions: </span></td>
             <td>
               <span> {{ actions }} /</span>
-              <span> {{ license && license.maxActions }} / month</span>
+              <span> {{ license && license.maxActions }} / {{ calcMonth() }}</span>
             </td>
           </tr>
           <tr>
@@ -59,6 +59,12 @@ export default {
     };
   },
   methods: {
+    calcMonth() {
+      var d = new Date();
+      var date = d.toDateString().slice(4, 7);
+      //console.log("date", date);
+      return date;
+    },
     countConditions() {
       if (
         this.license.maxTeamMembers < this.testers.length ||
@@ -111,9 +117,9 @@ export default {
       .then((snapshot) => {
         snapshot.forEach((doc) => {
           this.license = doc.data();
-          console.log("license", this.license);
+          // console.log("license", this.license);
           this.license.id = doc.id;
-          console.log("license.id", this.license.id);
+          //console.log("license.id", this.license.id);
         });
         this.countConditions();
       });
