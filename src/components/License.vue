@@ -6,7 +6,7 @@
         <i
           class="material-icons yellow-text conditionWarning"
           v-if="conditionExceeded"
-          :title="testers.length"
+          :title="conditionExceededType"
           >warning</i
         >
       </header>
@@ -53,6 +53,7 @@ export default {
       projects: [],
       feedback: null,
       conditionExceeded: false,
+      conditionExceededType: "",
       slug: "scale-up",
       actions: 300000,
     };
@@ -65,7 +66,13 @@ export default {
         this.license.maxNumberOfProjects < this.projects.length
       ) {
         this.conditionExceeded = true;
-        //console.log("conditionExceeded", this.conditionExceeded);
+      }
+      if (this.license.maxTeamMembers < this.testers.length) {
+        this.conditionExceededType = "Max number of Team Members exceeded.";
+      } else if (this.license.maxActions < this.actions) {
+        this.conditionExceededType = "Max number of Actions exceeded.";
+      } else {
+        this.conditionExceededType = "Max number of Projects exceeded.";
       }
     },
   },
