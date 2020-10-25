@@ -11,15 +11,15 @@
         </div>
 
         <div class="col s12 m6 l3">
-          <!-- <div class="card green accent-4"> -->
-          <div class="card cyan">
+          <License></License>
+        </div>
+
+        <div class="col s12 m6 l3">
+          <div class="card ">
             <div class="card-content">
-              <h5 class="white-text">Some content here</h5>
+              <h5 class="pink-text">Some content here</h5>
             </div>
           </div>
-        </div>
-        <div class="col s12 m6 l3">
-          <License></License>
         </div>
         <div class="col s12 m6">
           <ListTests></ListTests>
