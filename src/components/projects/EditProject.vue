@@ -68,7 +68,9 @@
                     <td>{{ tester.firstname }}</td>
                     <td>{{ tester.projects[0].role }}</td>
                     <td>
-                      <i class="material-icons red-text" @click="deleteTester(tester.id)">delete</i>
+                      <i class="material-icons red-text delete" @click="deleteTester(tester.id)"
+                        >delete</i
+                      >
                     </td>
                   </tr>
                 </tbody>
@@ -148,7 +150,7 @@ export default {
       if (this.selectedTester) {
         this.feedback = null;
 
-        //hitta vald testare i dropdown på id:t- find() hittar första som matchar
+        //hitta vald testare i dropdown på id:t
         let currentTester = this.testers.find((tester) => {
           return tester.id == this.selectedTester;
         });
@@ -165,9 +167,10 @@ export default {
 
           //kolla om project.id redan finns i db
           if (project.id == this.project.id) {
+            projectExists = true;
+
             //byt bara roll
             project.role = this.selectedRole;
-            projectExists = true;
             console.log("projectExists");
           }
         });
@@ -192,10 +195,13 @@ export default {
             this.updateTesterUiList();
             this.$toastr.s("Project updated");
           });
+        //tillagt
       } else {
         this.$toastr.e("Please choose Tester and Role.");
         // this.feedback = "Please choose Tester and Role.";
       }
+      // this.selectedTester = null;
+      // this.selectedRole = null;
     },
     updateTesterUiList() {
       //uppdatera GUI-listan med testare även när man laddar om och inte valt något nytt
@@ -333,6 +339,9 @@ export default {
 
 <style lang="scss">
 .edit_project {
+  .delete {
+    cursor: pointer;
+  }
   .name {
     margin-bottom: 3rem;
   }
