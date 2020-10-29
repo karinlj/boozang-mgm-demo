@@ -4,7 +4,7 @@
     <form @submit.prevent="updateProject" class="card-panel">
       <header class="edit_header">
         <h4 class="center-align purple-text">{{ project.name }}</h4>
-        <i class="material-icons red-text delete" @click="deleteProject(project.id)">delete</i>
+        <i class="material-icons red-text delete">delete</i>
       </header>
       <div class="row">
         <div class="field col s4">
@@ -308,6 +308,8 @@ export default {
         snapshot.forEach((doc) => {
           this.project = doc.data(); //all the data in this project
           //id is in the doc
+          console.log("project", this.project);
+
           this.project.id = doc.id;
           //console.log("id", this.project.id);
         });
