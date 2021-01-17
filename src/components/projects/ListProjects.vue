@@ -1,12 +1,13 @@
 <template>
   <div class="card">
     <div class="card-content">
-      <header class="list_header">
-        <h5 class="purple-text">Projects</h5>
-        <router-link :to="{ name: 'AddProject' }" class="btn-small green accent-4">
-          Add project
-        </router-link>
-      </header>
+      <Header
+        headingColor="purple-text"
+        heading="Projects"
+        linkName="AddProject"
+        btnName="Add Project"
+      ></Header>
+
       <table id="dashboard_table" class="responsive-table striped">
         <thead>
           <tr>
@@ -19,10 +20,14 @@
         <tbody>
           <tr v-for="project in projects" :key="project.id">
             <td>
-              <p class="btn btn-floating purple">{{ project.name[0] }}{{ project.name[1] }}</p>
+              <p class="btn btn-floating purple">
+                {{ project.name[0] }}{{ project.name[1] }}
+              </p>
             </td>
             <td>{{ project.name }}</td>
-            <td class="timestamp">{{ formatDate(project.lastUpdated) }}</td>
+            <td class="timestamp">
+              {{ formatDate(project.lastUpdated) }}
+            </td>
             <td class="">{{ numberoOfTesters(project.id) }}</td>
             <td>
               <router-link
@@ -42,23 +47,31 @@
 </template>
 
 <script>
-import db from "@/firebase/init";
-
+import { mapGetters } from "vuex";
+import { mapActions } from "vuex";
+import Header from "../shared/Header";
+import formatDateMixin from "../../mixins/formatDateMixin";
 export default {
   name: "ListProjects",
+  components: {
+    Header,
+  },
   data() {
     return {
-      projects: [],
-      testers: [],
       feedback: null,
     };
   },
+
+  computed: {
+    ...mapGetters({
+      testers: "testers",
+      projects: "projects",
+    }),
+  },
   methods: {
-    formatDate(lastUpdated) {
-      let date = new Date(lastUpdated * 1000);
-      let format = date.toISOString().slice(0, 10);
-      return format;
-    },
+    //fetch projects firestore
+    ...mapActions(["fetchProjects", "fetchTesters"]),
+
     numberoOfTesters(projectId) {
       //i HTML: loopar över project collection
       //ett projekt-id, en testare
@@ -79,43 +92,11 @@ export default {
       return numberOfTesters;
     },
   },
-
   created() {
-    //fetch projects firestore
-    db.collection("projects")
-      .get()
-      .then((snapshot) => {
-        snapshot.forEach((doc) => {
-          let project = doc.data(); //all the data
-          //lägger in id:t i data() temporärt
-          project.id = doc.id;
-          project.lastUpdated = project.lastUpdated.seconds;
-          //lägger projekten i min data-prop
-          this.projects.push(project);
-        });
-      });
-    //fetch whole testers collection
-    db.collection("testers")
-      .get()
-      .then((snapshot) => {
-        snapshot.forEach((doc) => {
-          let tester = doc.data(); //all the data in all testers
-          //lägger tillfälligt doc.id i testers för att ha tillgång till det även om det eg ligger en nivå upp
-          tester.id = doc.id;
-          this.testers.push(tester);
-        });
-      });
+    this.fetchProjects();
+    this.fetchTesters();
   },
-  computed: {
-    // compclasses() {
-    //   //return an object with class and prop
-    //   return {
-    //     availableClass: this.available,
-    //     nearbyClass: this.nearby,
-    //   };
-    // },
-    //computed watch the variable it needs to run and updates only when needed
-  },
+  mixins: [formatDateMixin],
 };
 </script>
 

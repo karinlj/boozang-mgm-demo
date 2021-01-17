@@ -6,7 +6,7 @@
 </template>
 
 <script>
-import Navbar from "./components/layout/Navbar";
+import Navbar from "./components/shared/Navbar";
 export default {
   name: "App",
   components: {
@@ -41,14 +41,6 @@ body {
       height: 350px;
       overflow: auto;
       border-radius: 5px;
-      .list_header {
-        display: flex;
-        justify-content: space-between;
-        margin-bottom: 0.5rem;
-        h5 {
-          margin-top: 0;
-        }
-      }
     }
     .edit_comp {
       position: relative;

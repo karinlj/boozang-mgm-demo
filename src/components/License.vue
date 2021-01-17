@@ -25,7 +25,9 @@
             <td><span>Actions: </span></td>
             <td>
               <span> {{ actions }} /</span>
-              <span> {{ license && license.maxActions }} / {{ calcMonth() }}</span>
+              <span>
+                {{ license && license.maxActions }} / {{ calcMonth() }}</span
+              >
             </td>
           </tr>
           <tr>
@@ -43,14 +45,15 @@
 
 <script>
 import db from "@/firebase/init";
+import { mapGetters } from "vuex";
+import { mapActions } from "vuex";
+import calcMonthMixin from "../mixins/calcMonthMixin";
 
 export default {
   name: "License",
   data() {
     return {
       license: null,
-      testers: [],
-      projects: [],
       feedback: null,
       conditionExceeded: false,
       conditionExceededType: "",
@@ -58,13 +61,16 @@ export default {
       actions: 300000,
     };
   },
+  computed: {
+    ...mapGetters({
+      testers: "testers",
+      projects: "projects",
+    }),
+  },
   methods: {
-    calcMonth() {
-      var d = new Date();
-      var date = d.toDateString().slice(4, 7);
-      //console.log("date", date);
-      return date;
-    },
+    //fetch testers and projects
+    ...mapActions(["fetchTesters", "fetchProjects"]),
+
     countConditions() {
       if (
         this.license.maxTeamMembers < this.testers.length ||
@@ -82,34 +88,11 @@ export default {
       }
     },
   },
+
   created() {
-    //fetch tests firestore
-    db.collection("testers")
-      .get()
-      .then((snapshot) => {
-        snapshot.forEach((doc) => {
-          let tester = doc.data(); //all the data
-          //lägger in id:t i data() temporärt
-          tester.id = doc.id;
-          this.testers.push(tester);
-        });
-        // console.log("testers", this.testers);
-      });
-    //fetch projects firestore
-    db.collection("projects")
-      .get()
-      .then((snapshot) => {
-        snapshot.forEach((doc) => {
-          let project = doc.data(); //all the data
-          //lägger in id:t i data() temporärt
-          project.id = doc.id;
-          project.lastUpdated = project.lastUpdated.seconds;
-          //lägger projekten i min data-prop
-          this.projects.push(project);
-        });
-        //console.log("projects", this.projects);
-      });
-    //1.  get license by the slug, we dont have the id??
+    this.fetchTesters();
+    this.fetchProjects();
+    // //1.  get license by the slug, we dont have the id??
     db.collection("licenses")
       .where("slug", "==", this.slug)
       //get the data (should be just one, but in a collection)
@@ -124,6 +107,7 @@ export default {
         this.countConditions();
       });
   },
+  mixins: [calcMonthMixin],
 };
 </script>
 

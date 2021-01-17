@@ -1,9 +1,8 @@
 <template>
   <div class="card">
     <div class="card-content">
-      <header class="list_header">
-        <h5 class="cyan-text">Test executions</h5>
-      </header>
+      <Header headingColor="cyan-text" heading="Test executions"></Header>
+
       <table id="dashboard_table" class="responsive-table striped">
         <thead>
           <tr>
@@ -19,12 +18,16 @@
             <td>{{ test.name }}</td>
             <td>
               <!-- dynamic class -->
-              <i class="material-icons" :class="test.success ? 'green-text' : 'red-text'"
+              <i
+                class="material-icons"
+                :class="test.success ? 'green-text' : 'red-text'"
                 >fiber_manual_record</i
               >
             </td>
             <td class="timestamp">{{ secondsToMinutes(test.duration) }}</td>
-            <td class="timestamp">{{ formatDate(test.latestExecution) }}</td>
+            <td class="timestamp">
+              {{ formatDate(test.latestExecution) }}
+            </td>
             <td>
               <p class="btn btn-floating purple">
                 {{ getProject(test.projectId) }}
@@ -38,90 +41,47 @@
 </template>
 
 <script>
-import db from "@/firebase/init";
+import { mapGetters } from "vuex";
+import { mapActions } from "vuex";
+import Header from "../shared/Header";
+import secondsToMinutesMixin from "../../mixins/secondsToMinutesMixin";
+import formatDateMixin from "../../mixins/formatDateMixin";
 
 export default {
   name: "ListTests",
+  components: {
+    Header,
+  },
   data() {
     return {
-      tests: [],
-      projects: [],
       feedback: null,
-      latestActivity: null,
     };
   },
+  computed: {
+    ...mapGetters({
+      tests: "tests",
+      projects: "projects",
+    }),
+  },
   methods: {
+    //fetch tests and projects
+    ...mapActions(["fetchTests", "fetchProjects"]),
+
     getProject(projectId) {
       //bara en kolumn
       //för detta projectId leta upp motsvarande projectId i Projects och få namnet därifrån
       let project = this.projects.find((project) => {
         return project.id === projectId;
       });
-      //console.log("project", project.name);
       return project.name[0] + project.name[1];
     },
-    secondsToMinutes(time) {
-      let testTime = Math.floor(time / 60) + "min " + Math.floor(time % 60) + "s ";
-      // console.log("testTime", testTime);
-      return testTime;
-    },
-
-    //  calculateStatus(latestExecution) {
-    //   //today - latestActivity in seconds
-    //   let diffTime = Math.floor(Date.now() / 1000) - latestExecution;
-    //   //  console.log("####");
-    //   //within one hour
-    //   if (diffTime < 3600) {
-    //     //console.log("diffHour");
-    //     return "green-text";
-    //     //within one week
-    //   } else if (diffTime < 3600 * 24 * 7) {
-    //     // console.log("diffWeek");
-    //     return "yellow-text";
-    //     //more than one week
-    //   } else {
-    //     // console.log("diffMoreThanWeek");
-    //     return "grey-text";
-    //   }
-    // },
-    formatDate(latestExecution) {
-      let date = new Date(latestExecution * 1000);
-      let format = date
-        .toISOString()
-        .slice(0, 16)
-        .replace("T", " ");
-      return format;
-    },
   },
-
   created() {
-    //fetch tests firestore
-    db.collection("tests")
-      .get()
-      .then((snapshot) => {
-        snapshot.forEach((doc) => {
-          let test = doc.data(); //all the data
-          //lägger in id:t i data() temporärt
-          test.id = doc.id;
-          test.latestExecution = test.latestExecution.seconds;
-          this.tests.push(test);
-        });
-      });
-    //fetch projects firestore
-    db.collection("projects")
-      .get()
-      .then((snapshot) => {
-        snapshot.forEach((doc) => {
-          let project = doc.data(); //all the data
-          //lägger in id:t i data() temporärt
-          project.id = doc.id;
-          project.lastUpdated = project.lastUpdated.seconds;
-          //lägger projekten i min data-prop
-          this.projects.push(project);
-        });
-      });
-    this.secondsToMinutes();
+    this.fetchTests();
+    this.fetchProjects();
+    //this.secondsToMinutes();
   },
+  mixins: [secondsToMinutesMixin, formatDateMixin],
 };
 </script>
 

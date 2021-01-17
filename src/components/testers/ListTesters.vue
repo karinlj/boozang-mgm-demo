@@ -1,12 +1,13 @@
 <template>
   <div class="card">
     <div class="card-content">
-      <header class="list_header">
-        <h5 class="blue-text">Team members</h5>
-        <router-link :to="{ name: 'AddTester' }" class="btn-small green accent-4">
-          Add Team member
-        </router-link>
-      </header>
+      <Header
+        headingColor="blue-text"
+        heading="Team members"
+        linkName="AddTester"
+        btnName="Add Team member"
+      ></Header>
+
       <table id="dashboard_table" class="responsive-table striped">
         <thead>
           <tr>
@@ -18,16 +19,19 @@
         </thead>
         <tbody>
           <tr v-for="tester in testers" :key="tester.id">
+            <!-- single tester -->
             <td>
               <p class="btn btn-floating blue">
                 {{ tester.firstname[0] + tester.lastname[0] }}
               </p>
             </td>
             <td>{{ tester.firstname }} {{ tester.lastname }}</td>
+            <!-- dynamic class set in method -->
             <td class="timestamp">{{ formatDate(tester.latestActivity) }}</td>
             <td>
-              <!-- dynamic class set in method -->
-              <i class="material-icons" :class="calculateStatus(tester.latestActivity)"
+              <i
+                class="material-icons"
+                :class="calculateStatus(tester.latestActivity)"
                 >fiber_manual_record</i
               >
             </td>
@@ -44,36 +48,34 @@
           </tr>
         </tbody>
       </table>
-      <!-- lägger toggling på div runt om span -->
-      <!-- <div class="test">
-        <h5>Dynamic CSS</h5>
-        <h6>Exampe 2</h6>
-        <button @click="nearby = !nearby">Toggle nearby</button>
-        <button @click="available = !available">Toggle available</button>
-        <div :class="compclasses">
-          <span>Ryu</span>
-        </div>
-      </div> -->
     </div>
   </div>
 </template>
 
 <script>
-import db from "@/firebase/init";
+import Header from "../shared/Header";
+import { mapGetters } from "vuex";
+import { mapActions } from "vuex";
+import formatDateMixin from "../../mixins/formatDateMixin";
 
 export default {
   name: "ListTesters",
+  components: {
+    Header,
+  },
   data() {
     return {
-      // available: false,
-      // nearby: false,
-
-      testers: [],
       feedback: null,
       latestActivity: null,
     };
   },
   methods: {
+    //actions in methods
+    ...mapActions(["fetchTesters"]),
+    // fetchTesters() {
+    //   this.$store.dispatch("fetchTesters");
+    // },
+
     calculateStatus(latestActivity) {
       //today - latestActivity in seconds
       let diffTime = Math.floor(Date.now() / 1000) - latestActivity;
@@ -92,61 +94,21 @@ export default {
         return "grey-text";
       }
     },
-    formatDate(latestActivity) {
-      let date = new Date(latestActivity * 1000);
-      let format = date.toISOString().slice(0, 10);
-      return format;
-    },
   },
-
-  created() {
-    //fetch data from firestore
-    db.collection("testers")
-      .get()
-      .then((snapshot) => {
-        snapshot.forEach((doc) => {
-          // console.log("doc.data()", doc.data());
-          // console.log("doc.id", doc.id);
-          let tester = doc.data(); //all the data
-          tester.latestActivity = tester.latestActivity.seconds;
-          this.testers.push(tester);
-        });
-      });
-  },
+  //getters in computed
   computed: {
-    // compclasses() {
-    //   //return an object with class and prop
-    //   return {
-    //     availableClass: this.available,
-    //     nearbyClass: this.nearby,
-    //   };
+    ...mapGetters({
+      testers: "testers",
+    }),
+    // getTesters() {
+    //   return this.$store.getters["testers"];
     // },
-    //computed watch the variable it needs to run and updates only when needed
   },
+  created() {
+    this.fetchTesters();
+  },
+  mixins: [formatDateMixin],
 };
 </script>
 
-<style lang="scss">
-// .test {
-//   span {
-//     display: inline-block;
-//     padding: 0.5rem;
-//     color: white;
-//     background: red;
-//     margin-bottom: 2rem;
-//   }
-//   .availableClass {
-//     span {
-//       background: green;
-//     }
-//   }
-//   .nearbyClass {
-//     span {
-//       &:after {
-//         content: "nearby";
-//         margin-left: 10px;
-//       }
-//     }
-//   }
-// }
-</style>
+<style lang="scss"></style>
