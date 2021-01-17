@@ -1,17 +1,19 @@
 <template>
   <div class="card">
     <div class="card-content">
-      <header class="list_header">
-        <h5 class="pink-text">Bug Reports</h5>
-      </header>
+      <Header headingColor="pink-text" heading="Bug Reports" />
       <p>No bugs reported.</p>
     </div>
   </div>
 </template>
 
 <script>
+import Header from "./shared/Header";
 export default {
   name: "BugReports",
+  components: {
+    Header,
+  },
   data() {
     return {
       title: "",

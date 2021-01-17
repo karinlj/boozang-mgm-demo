@@ -54,6 +54,7 @@ export default {
 
 <style lang="scss">
 .list_header {
+  position: relative;
   display: flex;
   justify-content: space-between;
   margin-bottom: 0.5rem;

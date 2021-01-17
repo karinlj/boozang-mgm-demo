@@ -6,11 +6,21 @@
       <div class="row">
         <div class="field col s6">
           <label for="firstname">Firstname</label>
-          <input type="text" name="firstname" v-model="tester.firstname" required />
+          <input
+            type="text"
+            name="firstname"
+            v-model="tester.firstname"
+            required
+          />
         </div>
         <div class="field col s6">
           <label for="lastname">Lastname</label>
-          <input type="text" name="lastname" v-model="tester.lastname" required />
+          <input
+            type="text"
+            name="lastname"
+            v-model="tester.lastname"
+            required
+          />
         </div>
       </div>
       <div class="row">
@@ -29,7 +39,6 @@
     </form>
   </div>
 </template>
-
 <script>
 import slugify from "slugify";
 import db from "@/firebase/init";
@@ -51,14 +60,16 @@ export default {
   methods: {
     addTester() {
       // console.log(this.tester.firstname);
-      // // required???
       if (this.tester.firstname && this.tester.lastname && this.tester.email) {
         //create slug with slugify
-        this.tester.slug = slugify(this.tester.firstname + "-" + this.tester.lastname, {
-          replacement: "-",
-          remove: /[$*_+~.()'"!:@]/g,
-          lower: true,
-        });
+        this.tester.slug = slugify(
+          this.tester.firstname + "-" + this.tester.lastname,
+          {
+            replacement: "-",
+            remove: /[$*_+~.()'"!:@]/g,
+            lower: true,
+          }
+        );
         //console.log("slug", this.tester.slug);
         this.feedback = null;
 

@@ -1,15 +1,13 @@
 <template>
   <div class="card cyan">
     <div class="card-content">
-      <header class="list_header">
-        <h5 class="white-text">Scale Up License</h5>
-        <i
-          class="material-icons yellow-text conditionWarning"
-          v-if="conditionExceeded"
-          :title="conditionExceededType"
-          >warning</i
-        >
-      </header>
+      <Header headingColor="white-text" heading="Scale Up License" />
+      <i
+        class="material-icons yellow-text conditionWarning"
+        v-if="conditionExceeded"
+        :title="conditionExceededType"
+        >warning</i
+      >
       <table class="license_table">
         <tbody>
           <tr>
@@ -45,12 +43,16 @@
 
 <script>
 import db from "@/firebase/init";
+import Header from "./shared/Header";
 import { mapGetters } from "vuex";
 import { mapActions } from "vuex";
 import calcMonthMixin from "../mixins/calcMonthMixin";
 
 export default {
   name: "License",
+  components: {
+    Header,
+  },
   data() {
     return {
       license: null,
@@ -114,6 +116,9 @@ export default {
 <style lang="scss">
 .conditionWarning {
   cursor: pointer;
+  position: absolute;
+  top: 20px;
+  right: 15px;
 }
 .license_table {
   color: #fff;
