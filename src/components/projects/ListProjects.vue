@@ -50,7 +50,7 @@
 import { mapGetters } from "vuex";
 import { mapActions } from "vuex";
 import Header from "../shared/Header";
-import formatDateMixin from "../../mixins/formatDateMixin";
+import mixins from "../../mixins/mixins";
 export default {
   name: "ListProjects",
   components: {
@@ -96,7 +96,7 @@ export default {
     this.fetchProjects();
     this.fetchTesters();
   },
-  mixins: [formatDateMixin],
+  mixins: [mixins],
 };
 </script>
 

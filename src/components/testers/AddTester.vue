@@ -41,8 +41,10 @@
 </template>
 <script>
 import slugify from "slugify";
-import db from "@/firebase/init";
+//import db from "@/firebase/init";
 import firebase from "firebase";
+//import { mapActions } from "vuex";
+
 export default {
   name: "AddTester",
 
@@ -76,25 +78,36 @@ export default {
         //sätt firebase timestamp
         let myTimestamp = firebase.firestore.Timestamp.fromDate(new Date());
 
+        //make object
+        const formData = {
+          firstname: this.tester.firstname,
+          lastname: this.tester.lastname,
+          email: this.tester.email,
+          latestActivity: myTimestamp,
+          slug: this.tester.slug,
+          projects: [],
+        };
         //add to db
-        db.collection("testers")
-          .add({
-            firstname: this.tester.firstname,
-            lastname: this.tester.lastname,
-            email: this.tester.email,
-            latestActivity: myTimestamp,
-            slug: this.tester.slug,
-            projects: [],
-          })
-          .then(() => {
-            //när tester addad-redirect
-            this.$router.push({ name: "Home" });
-          });
+        this.$store.dispatch("addTester", formData);
+
+        //add to db
+        // db.collection("testers")
+        //   .add({
+        //     firstname: this.tester.firstname,
+        //     lastname: this.tester.lastname,
+        //     email: this.tester.email,
+        //     latestActivity: myTimestamp,
+        //     slug: this.tester.slug,
+        //     projects: [],
+        //   })
+        //   .then(() => {
+        //     //när tester addad-redirect
+        //     this.$router.push({ name: "Home" });
+        //   });
       } else {
         this.feedback = "Please fill in full name and email.";
       }
     },
-
     cancel() {
       this.$router.push({ name: "Home" });
     },

@@ -56,7 +56,7 @@
 import Header from "../shared/Header";
 import { mapGetters } from "vuex";
 import { mapActions } from "vuex";
-import formatDateMixin from "../../mixins/formatDateMixin";
+import mixins from "../../mixins/mixins";
 
 export default {
   name: "ListTesters",
@@ -68,6 +68,15 @@ export default {
       feedback: null,
       latestActivity: null,
     };
+  },
+  //getters in computed
+  computed: {
+    ...mapGetters({
+      testers: "testers",
+    }),
+    // getTesters() {
+    //   return this.$store.getters["testers"];
+    // },
   },
   methods: {
     //actions in methods
@@ -95,19 +104,10 @@ export default {
       }
     },
   },
-  //getters in computed
-  computed: {
-    ...mapGetters({
-      testers: "testers",
-    }),
-    // getTesters() {
-    //   return this.$store.getters["testers"];
-    // },
-  },
   created() {
     this.fetchTesters();
   },
-  mixins: [formatDateMixin],
+  mixins: [mixins],
 };
 </script>
 

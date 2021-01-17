@@ -46,8 +46,7 @@ import db from "@/firebase/init";
 import Header from "./shared/Header";
 import { mapGetters } from "vuex";
 import { mapActions } from "vuex";
-import calcMonthMixin from "../mixins/calcMonthMixin";
-
+import mixins from "../mixins/mixins";
 export default {
   name: "License",
   components: {
@@ -109,7 +108,7 @@ export default {
         this.countConditions();
       });
   },
-  mixins: [calcMonthMixin],
+  mixins: [mixins],
 };
 </script>
 

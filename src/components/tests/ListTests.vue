@@ -44,8 +44,7 @@
 import { mapGetters } from "vuex";
 import { mapActions } from "vuex";
 import Header from "../shared/Header";
-import secondsToMinutesMixin from "../../mixins/secondsToMinutesMixin";
-import formatDateMixin from "../../mixins/formatDateMixin";
+import mixins from "../../mixins/mixins";
 
 export default {
   name: "ListTests",
@@ -81,7 +80,7 @@ export default {
     this.fetchProjects();
     //this.secondsToMinutes();
   },
-  mixins: [secondsToMinutesMixin, formatDateMixin],
+  mixins: [mixins],
 };
 </script>
 
