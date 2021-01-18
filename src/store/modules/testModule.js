@@ -1,5 +1,5 @@
 import db from "@/firebase/init";
-import firebase from "firebase";
+
 export const testModule = {
   state: {
     tests: [],
@@ -30,41 +30,12 @@ export const testModule = {
         })
         .catch((error) => console.error("error", error));
     },
-    //add tester
-    addTester(context, payload) {
-      //sätt firebase timestamp
-      let myTimestamp = firebase.firestore.Timestamp.fromDate(new Date());
-
-      const testerData = {
-        firstname: payload.firstname,
-        lastname: payload.lastname,
-        email: payload.email,
-        latestActivity: myTimestamp,
-        slug: payload.slug,
-        projects: [],
-      };
-
-      //add to db
-      db.collection("testers")
-        .add(testerData)
-        .then(() => {
-          //  redirect
-          //     this.$router.push({ name: "Home" });
-        });
-      context.commit("addTesterToDb", {
-        //take all props and merge them into a new object
-        ...testerData,
-      });
-    },
   },
 
   mutations: {
     setTests: (state, payload) => {
       // console.log("get_tests", payload);
       state.tests = payload;
-    },
-    addTesterToDb(state, payload) {
-      state.tests = [...state.tests, payload];
     },
   },
 };

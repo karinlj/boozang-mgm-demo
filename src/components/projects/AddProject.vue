@@ -1,6 +1,6 @@
 <template>
   <div class="add_project container">
-    <form @submit.prevent="addProject" class="card-panel">
+    <form @submit.prevent="handleSubmit" class="card-panel">
       <h4 class="center-align purple-text">Add project</h4>
 
       <div class="row">
@@ -32,8 +32,8 @@
 
 <script>
 import slugify from "slugify";
-import db from "@/firebase/init";
-import firebase from "firebase";
+//import firebase from "firebase";
+import { mapActions } from "vuex";
 export default {
   name: "Addproject",
 
@@ -47,7 +47,8 @@ export default {
     };
   },
   methods: {
-    addProject() {
+    ...mapActions(["addProject"]),
+    handleSubmit() {
       if (this.project.name) {
         //create slug with slugify
         this.project.slug = slugify(this.project.name, {
@@ -55,27 +56,19 @@ export default {
           remove: /[$*_+~.()'"!:@]/g,
           lower: true,
         });
-        //  console.log("slug", this.project.slug);
         this.feedback = null;
 
-        //sätt firebase timestamp
-        let myTimestamp = firebase.firestore.Timestamp.fromDate(new Date());
-        //add to db
-        db.collection("projects")
-          .add({
-            name: this.project.name,
-            lastUpdated: myTimestamp,
-            slug: this.project.slug,
-          })
-          .then(() => {
-            //när project addad-redirect
-            this.$router.push({ name: "Home" });
-          });
+        const newProject = {
+          name: this.project.name,
+          slug: this.project.slug,
+        };
+        this.addProject(newProject);
+        //redirect
+        this.$router.push({ name: "Home" });
       } else {
         this.feedback = "Please fill in project name.";
       }
     },
-
     cancel() {
       this.$router.push({ name: "Home" });
     },

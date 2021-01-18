@@ -1,4 +1,5 @@
 import db from "@/firebase/init";
+import firebase from "firebase";
 export const projectModule = {
   state: {
     projects: [],
@@ -29,12 +30,36 @@ export const projectModule = {
         })
         .catch((error) => console.error("error", error));
     },
+    addProject(context, payload) {
+      //sätt firebase timestamp
+      let myTimestamp = firebase.firestore.Timestamp.fromDate(new Date());
+
+      const projectData = {
+        name: payload.name,
+        lastUpdated: myTimestamp,
+        slug: payload.slug,
+      };
+      console.log("projectData", projectData);
+      //add to db
+      db.collection("projects")
+        .add(projectData)
+        .then(() => {
+          context.commit("addProjectToDb", {
+            //take all props and merge them into a new object
+            ...projectData,
+          });
+        })
+        .catch((error) => console.log("error", error));
+    },
   },
 
   mutations: {
     setProjects: (state, payload) => {
       // console.log("get_projects", payload);
       state.projects = payload;
+    },
+    addProjectToDb: (state, payload) => {
+      state.projects = [...state.projects, payload];
     },
   },
 };

@@ -1,5 +1,5 @@
 import db from "@/firebase/init";
-
+import firebase from "firebase";
 export const testerModule = {
   state: {
     testers: [],
@@ -31,6 +31,33 @@ export const testerModule = {
         })
         .catch((error) => console.error("error", error));
     },
+    //add tester
+    addTester(context, payload) {
+      //sätt firebase timestamp
+      let myTimestamp = firebase.firestore.Timestamp.fromDate(new Date());
+      console.log("myTimestamp", myTimestamp);
+
+      const testerData = {
+        firstname: payload.firstname,
+        lastname: payload.lastname,
+        email: payload.email,
+        latestActivity: myTimestamp,
+        slug: payload.slug,
+        projects: [],
+      };
+      console.log("testerData", testerData);
+      //add to db
+      db.collection("testers")
+        .add(testerData)
+        //do something when todo is added
+        .then(() => {
+          context.commit("addTesterToDb", {
+            //take all props and merge them into a new object
+            ...testerData,
+          });
+        })
+        .catch((error) => console.error("error", error));
+    },
   },
   //change the state
   //state 1st argument
@@ -39,6 +66,9 @@ export const testerModule = {
     setTesters: (state, payload) => {
       // console.log("get_testers", payload);
       state.testers = payload;
+    },
+    addTesterToDb(state, payload) {
+      state.testers = [...state.testers, payload];
     },
   },
 };

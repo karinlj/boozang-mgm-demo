@@ -1,6 +1,6 @@
 <template>
   <div class="add_tester container">
-    <form @submit.prevent="addTester" class="card-panel">
+    <form @submit.prevent="handleSubmit" class="card-panel">
       <h4 class="center-align blue-text">Add Team member</h4>
 
       <div class="row">
@@ -41,13 +41,11 @@
 </template>
 <script>
 import slugify from "slugify";
-//import db from "@/firebase/init";
-import firebase from "firebase";
-//import { mapActions } from "vuex";
+//import firebase from "firebase";
+import { mapActions } from "vuex";
 
 export default {
   name: "AddTester",
-
   data() {
     return {
       tester: {
@@ -60,8 +58,9 @@ export default {
     };
   },
   methods: {
-    addTester() {
-      // console.log(this.tester.firstname);
+    ...mapActions(["addTester"]),
+    handleSubmit() {
+      console.log(this.tester.firstname);
       if (this.tester.firstname && this.tester.lastname && this.tester.email) {
         //create slug with slugify
         this.tester.slug = slugify(
@@ -72,38 +71,22 @@ export default {
             lower: true,
           }
         );
-        //console.log("slug", this.tester.slug);
         this.feedback = null;
-
-        //sätt firebase timestamp
-        let myTimestamp = firebase.firestore.Timestamp.fromDate(new Date());
-
         //make object
-        const formData = {
+        const newTester = {
           firstname: this.tester.firstname,
           lastname: this.tester.lastname,
           email: this.tester.email,
-          latestActivity: myTimestamp,
           slug: this.tester.slug,
           projects: [],
         };
-        //add to db
-        this.$store.dispatch("addTester", formData);
+        //calling action
+        // wait until the promise returns us a value
+        //this.$store.dispatch("addTester", newTester);
+        this.addTester(newTester);
 
-        //add to db
-        // db.collection("testers")
-        //   .add({
-        //     firstname: this.tester.firstname,
-        //     lastname: this.tester.lastname,
-        //     email: this.tester.email,
-        //     latestActivity: myTimestamp,
-        //     slug: this.tester.slug,
-        //     projects: [],
-        //   })
-        //   .then(() => {
-        //     //när tester addad-redirect
-        //     this.$router.push({ name: "Home" });
-        //   });
+        //redirect
+        this.$router.push({ name: "Home" });
       } else {
         this.feedback = "Please fill in full name and email.";
       }
