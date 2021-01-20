@@ -1,6 +1,5 @@
 import db from "@/firebase/init";
 import firebase from "firebase";
-//import firestore from "firebase/firestore";
 export const testerModule = {
   state: {
     testers: [],

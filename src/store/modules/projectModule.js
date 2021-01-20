@@ -1,6 +1,5 @@
 import db from "@/firebase/init";
-// import firebase from "firebase";
-import firestore from "firebase/firestore";
+import firebase from "firebase";
 export const projectModule = {
   state: {
     projects: [],
@@ -12,9 +11,8 @@ export const projectModule = {
     },
   },
   actions: {
-    //fetch projects firestore
     fetchProjects(context) {
-      // console.log("hej fetchProjects");
+      //console.log("hej fetchProjects");
       let projectsFromDb = [];
       db.collection("projects")
         .get()
@@ -24,7 +22,6 @@ export const projectModule = {
             //lägger in id:t i data() temporärt
             project.id = doc.id;
             project.lastUpdated = project.lastUpdated.seconds;
-            //lägger projekten i tom array
             projectsFromDb = [...projectsFromDb, project];
           });
           context.commit("setProjects", projectsFromDb);
@@ -32,16 +29,14 @@ export const projectModule = {
         .catch((error) => console.error("error", error));
     },
     addProject(context, payload) {
-      //sätt firebase timestamp
-      let myTimestamp = firestore.Timestamp.fromDate(new Date());
+      let myTimestamp = firebase.firestore.Timestamp.fromDate(new Date());
 
       const projectData = {
         name: payload.name,
-        lastUpdated: myTimestamp,
+        latestActivity: myTimestamp,
         slug: payload.slug,
       };
-      console.log("projectData", projectData);
-      //add to db
+      //console.log("projectData", projectData);
       db.collection("projects")
         .add(projectData)
         .then(() => {
@@ -53,18 +48,17 @@ export const projectModule = {
         .catch((error) => console.log("error", error));
     },
     updateProject(context, payload) {
-      console.log("payload", payload);
-      let myTimestamp = firestore.Timestamp.fromDate(new Date());
-      // console.log("Date", myTimestamp);
+      // console.log("payload", payload);
+      let myTimestamp = firebase.firestore.Timestamp.fromDate(new Date());
 
       const updatedData = {
         name: payload.name,
         description: payload.description,
-        latestActivity: myTimestamp,
+        lastUpdated: myTimestamp,
         id: payload.id,
         slug: payload.slug,
       };
-      //uppdatera detta projekt
+      //console.log("updateProject", updatedData);
       db.collection("projects")
         //this.project.id = doc.id from created()
         .doc(updatedData.id)
@@ -86,10 +80,16 @@ export const projectModule = {
       state.projects = payload;
     },
     addProjectToDb: (state, payload) => {
-      state.projects = [...state.projects, payload];
+      state.projects = [payload, ...state.projects];
     },
     updProjectInGui: (state, payload) => {
-      console.log("updProjectInGui", state.testers, payload);
+      //behövs detta??
+      console.log("updProjectInGui_before_func", state.projects, payload);
+      const index = state.projects.findIndex((project) => {
+        return project.id === payload.id;
+      });
+      state.projects.splice(index, 1, payload);
+      console.log("updProjectInGui_after_func", state.projects);
     },
     removeProjectFromGui(state, payload) {
       console.log("removeProjectFromGui", payload);

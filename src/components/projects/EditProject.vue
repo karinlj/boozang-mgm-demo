@@ -152,7 +152,7 @@ export default {
       this.project = this.projects.find((project) => {
         return project.slug === slug;
       });
-      console.log("project", this.project);
+      // console.log("project", this.project);
     },
     editProject() {
       // // required???
@@ -163,7 +163,6 @@ export default {
           remove: /[$*_+~.()'"!:@]/g,
           lower: true,
         });
-        //sätt firebase timestamp
 
         const updatedProject = {
           name: this.project.name,
@@ -172,15 +171,7 @@ export default {
           slug: this.project.slug,
         };
         this.updateProject(updatedProject);
-        console.log("hej");
-        // //uppdatera detta projekt
-        // db.collection("projects")
-        //   //this.project.id = doc.id from created()
-        //   .doc(updatedProject.id)
-        //   .update(updatedProject)
-        //   .then(() => {});
-
-        //this.$router.push({ name: "Home" });
+        this.$router.push({ name: "Home" });
       } else {
         this.$toastr.e("Please fill in project name.");
       }
@@ -314,6 +305,10 @@ export default {
     this.fetchTesters();
     this.fetchProjects();
     this.getSingleProject();
+
+    //console.log(" this.project", this.project);
+    // console.log(" this.testers", this.testers);
+    // console.log(" this.projects", this.projects);
 
     // //1.  get this project by the slug, we dont have the id
     // db.collection("projects")
