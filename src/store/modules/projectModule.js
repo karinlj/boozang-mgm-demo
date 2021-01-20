@@ -1,5 +1,6 @@
 import db from "@/firebase/init";
-import firebase from "firebase";
+// import firebase from "firebase";
+import firestore from "firebase/firestore";
 export const projectModule = {
   state: {
     projects: [],
@@ -32,7 +33,7 @@ export const projectModule = {
     },
     addProject(context, payload) {
       //sätt firebase timestamp
-      let myTimestamp = firebase.firestore.Timestamp.fromDate(new Date());
+      let myTimestamp = firestore.Timestamp.fromDate(new Date());
 
       const projectData = {
         name: payload.name,
@@ -51,6 +52,32 @@ export const projectModule = {
         })
         .catch((error) => console.log("error", error));
     },
+    updateProject(context, payload) {
+      console.log("payload", payload);
+      let myTimestamp = firestore.Timestamp.fromDate(new Date());
+      // console.log("Date", myTimestamp);
+
+      const updatedData = {
+        name: payload.name,
+        description: payload.description,
+        latestActivity: myTimestamp,
+        id: payload.id,
+        slug: payload.slug,
+      };
+      //uppdatera detta projekt
+      db.collection("projects")
+        //this.project.id = doc.id from created()
+        .doc(updatedData.id)
+        .update(updatedData)
+        .then(() => {
+          context.commit("updProjectInGui", {
+            ...updatedData,
+          });
+        });
+    },
+    removeProject(context, payload) {
+      console.log("payload", payload);
+    },
   },
 
   mutations: {
@@ -60,6 +87,12 @@ export const projectModule = {
     },
     addProjectToDb: (state, payload) => {
       state.projects = [...state.projects, payload];
+    },
+    updProjectInGui: (state, payload) => {
+      console.log("updProjectInGui", state.testers, payload);
+    },
+    removeProjectFromGui(state, payload) {
+      console.log("removeProjectFromGui", payload);
     },
   },
 };

@@ -10,7 +10,7 @@
           >delete</i
         >
       </header>
-      <!-- <p>{{ testers }}</p> -->
+      <p>{{ testers }}</p>
 
       <div class="row">
         <div class="field col s6">
@@ -64,6 +64,9 @@
 
 <script>
 import slugify from "slugify";
+import db from "@/firebase/init";
+import firestore from "firebase/firestore";
+//import firebase from "firebase";
 import { mapGetters } from "vuex";
 import { mapActions } from "vuex";
 export default {
@@ -72,7 +75,7 @@ export default {
     return {
       //store the db-answer from created() in tester
       tester: null,
-      // projects: [],
+      projects: [],
       feedback: null,
       projectsOnTester: [],
     };
@@ -81,31 +84,38 @@ export default {
     //get from state
     ...mapGetters({
       testers: "testers",
-      projects: "projects",
     }),
   },
   methods: {
     //fetch from db
-    ...mapActions([
-      "fetchTesters",
-      "fetchProjects",
-      "updateTester",
-      "removeTester",
-    ]),
+    ...mapActions(["fetchTesters"]),
 
-    getSingleTester() {
-      //get tester by slug
-      let slug = this.$route.params.tester_slug;
-      this.tester = this.testers.find((tester) => {
-        return tester.slug === slug;
-      });
-      //console.log("tester", this.tester);
-    },
+    // getSingleTester(){
+    //   console.log('this.testers', this.testers)
+    // }
 
     findProjects() {
-      //find testers projects
+      //hela gui-tabellen
+      //löpa över hugo's alla projekt för att hämta projekt från projekt-tabell
+
+      // console.log("this.tester.projects[0]", this.tester.projects[0]);
+
+      //1. löpa över hugo's alla projekt
+      // for (let i = 0; i < this.tester.projects.length; i++) {
+      //   //console.log("this.tester.projects-index", this.tester.projects[i]);
+      //   //2. löpa över alla projekt i projekt-tabell, lägg i variabel
+      //   //3. hitta projekt med samma id som projectsOnTester[i]
+      //   let projectInTable = this.projects.find((item) => {
+      //     return item.id === this.tester.projects[i].id;
+      //   });
+      //   console.log("projectInTable", projectInTable);
+      // }
+
+      //1. löpa över hugo's alla projekt
       this.tester.projects.forEach((item) => {
+        //2. löpa över alla projekt i projekt-tabell, lägg i variabel
         let project = this.projects.find((project) => {
+          //3. hitta projekt med samma id som item
           return project.id === item.id;
         });
         //console.log("project.name", project.name);
@@ -127,15 +137,24 @@ export default {
         //console.log("slug", this.tester.slug);
         this.feedback = null;
 
-        const updatedTester = {
-          firstname: this.tester.firstname,
-          lastname: this.tester.lastname,
-          email: this.tester.email,
-          slug: this.tester.slug,
-          id: this.tester.id,
-        };
-        this.updateTester(updatedTester);
-        this.$router.push({ name: "Home" });
+        //sätt firebase timestamp
+        let myTimestamp = firestore.Timestamp.fromDate(new Date());
+
+        db.collection("testers")
+          //grab the doc and update it
+          //this.tester.id = doc.id from created()
+          .doc(this.tester.id)
+          .update({
+            firstname: this.tester.firstname,
+            lastname: this.tester.lastname,
+            latestActivity: myTimestamp,
+            email: this.tester.email,
+            slug: this.tester.slug,
+            //projects:
+          })
+          .then(() => {
+            this.$router.push({ name: "Home" });
+          });
       } else {
         this.feedback = "Please fill in full name and email.";
       }
@@ -145,15 +164,55 @@ export default {
     },
     deleteTester(id) {
       // console.log("id", id);
-      this.removeTester(id);
-      this.$router.push({ name: "Home" });
+      db.collection("testers")
+        //ref to a doc with an id, delete from db
+        .doc(id)
+        .delete()
+        .then(() => {
+          this.$router.push({ name: "Home" });
+        });
     },
+    // getTester() {
+    //   let slug = this.$route.params.tester_slug;
+    //   //console.log("slug", slug);
+    //   //console.log("this.testers", this.testers);
+
+    //   this.tester = this.testers.find((tester) => {
+    //     return tester.slug === slug;
+    //   });
+    //   console.log("tester", this.tester);
+    // },
   },
   created() {
     this.fetchTesters();
-    this.fetchProjects();
-    this.getSingleTester();
-    this.findProjects();
+    // this.getTester();
+    //1.  get tester by the slug, we dont have the id
+    let ref = db
+      .collection("testers")
+      .where("slug", "==", this.$route.params.tester_slug);
+    //get the data (should be just one, but in a collection)
+    ref.get().then((snapshot) => {
+      snapshot.forEach((doc) => {
+        this.tester = doc.data();
+        //  console.log("tester", this.tester);
+        //här får vi this.tester.id till editTester() ovan
+        this.tester.id = doc.id;
+        //console.log("tester.id", this.tester.id);
+      });
+    });
+    //fetch projects firestore
+    db.collection("projects")
+      .get()
+      .then((snapshot) => {
+        snapshot.forEach((doc) => {
+          let project = doc.data(); //all the data
+          //lägger in id:t i data() temporärt
+          project.id = doc.id;
+          this.projects.push(project);
+        });
+        //console.log("projects", this.projects);
+        this.findProjects();
+      });
   },
 };
 </script>

@@ -1,5 +1,6 @@
 import db from "@/firebase/init";
 import firebase from "firebase";
+//import firestore from "firebase/firestore";
 export const testerModule = {
   state: {
     testers: [],
@@ -23,6 +24,7 @@ export const testerModule = {
             // console.log("doc.data()", doc.data());
             // console.log("doc.id", doc.id);
             let tester = doc.data(); //all the data
+            tester.id = doc.id;
             tester.latestActivity = tester.latestActivity.seconds;
             testersFromDb = [...testersFromDb, tester];
           });
@@ -45,16 +47,53 @@ export const testerModule = {
         slug: payload.slug,
         projects: [],
       };
-      console.log("testerData", testerData);
+      // console.log("testerData", testerData);
       //add to db
       db.collection("testers")
         .add(testerData)
         //do something when todo is added
         .then(() => {
-          context.commit("addTesterToDb", {
+          context.commit("addTesterToGui", {
             //take all props and merge them into a new object
             ...testerData,
           });
+        })
+        .catch((error) => console.error("error", error));
+    },
+    //action for any kind of update
+    updateTester(context, payload) {
+      //sätt firebase timestamp
+      let myTimestamp = firebase.firestore.Timestamp.fromDate(new Date());
+
+      const updatedData = {
+        firstname: payload.firstname,
+        lastname: payload.lastname,
+        latestActivity: myTimestamp,
+        email: payload.email,
+        slug: payload.slug,
+        id: payload.id,
+      };
+      //console.log("updatedData", updatedData);
+
+      db.collection("testers")
+        //grab the doc and update it
+        //this.tester.id = doc.id from created()
+        .doc(updatedData.id)
+        .update(updatedData)
+        .then(() => {
+          context.commit("updTesterInGui", {
+            ...updatedData,
+          });
+        })
+        .catch((error) => console.error("error", error));
+    },
+    removeTester(context, payload) {
+      db.collection("testers")
+        //ref to a doc with an id, delete from db
+        .doc(payload)
+        .delete()
+        .then(() => {
+          context.commit("removeTesterFromGui", payload);
         })
         .catch((error) => console.error("error", error));
     },
@@ -64,11 +103,30 @@ export const testerModule = {
   mutations: {
     //take the response (array of testers) and add to the state
     setTesters: (state, payload) => {
-      // console.log("get_testers", payload);
+      //console.log("get_testers", payload);
       state.testers = payload;
     },
-    addTesterToDb(state, payload) {
-      state.testers = [...state.testers, payload];
+    addTesterToGui(state, payload) {
+      state.testers = [payload, ...state.testers];
+    },
+    updTesterInGui: (state, payload) => {
+      //console.log("updTesterInDb", state.testers, payload);
+      const index = state.testers.findIndex((tester) => {
+        return tester.id === payload.id;
+      });
+      //console.log("index", index);
+      if (index !== -1) {
+        //At position index, remove 1 item and add the updatedTodo
+        state.testers.splice(index, 1, payload);
+      }
+      // console.log("updTesterInDb", payload);
+    },
+    removeTesterFromGui(state, payload) {
+      // console.log("removeTesterFromGui", payload);
+      state.testers = state.testers.filter((tester) => {
+        return tester.id !== payload;
+      });
+      console.log("removeTesterFromGui", state.testers);
     },
   },
 };

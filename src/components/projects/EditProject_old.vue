@@ -1,7 +1,7 @@
 <template>
   <!-- wait to render until we have the data from db -->
   <div v-if="project" class="edit_comp edit_project container">
-    <form @submit.prevent="editProject" class="card-panel">
+    <form @submit.prevent="updateProject" class="card-panel">
       <header class="edit_header">
         <h4 class="center-align purple-text">{{ project.name }}</h4>
         <i class="material-icons red-text delete">delete</i>
@@ -91,7 +91,7 @@
         </div>
       </div>
       <footer class="field center-align">
-        <!-- <p class="red-text" v-if="feedback">{{ feedback }}</p> -->
+        <p class="red-text" v-if="feedback">{{ feedback }}</p>
         <button type="button" class="btn grey" @click="cancel">Cancel</button>
         <button class="btn green accent-4" type="submit">
           Update
@@ -104,10 +104,8 @@
 <script>
 import slugify from "slugify";
 import db from "@/firebase/init";
-import { mapGetters } from "vuex";
-import { mapActions } from "vuex";
 //import firebase from "firebase";
-//import firestore from "firebase/firestore";
+import firestore from "firebase/firestore";
 export default {
   name: "EditProject",
 
@@ -115,8 +113,8 @@ export default {
     return {
       //store the db-answer from created() in project
       project: null,
-      // feedback: null,
-      // testers: [],
+      feedback: null,
+      testers: [],
       selectedTester: null,
       selectedRole: null,
       roles: [
@@ -131,30 +129,8 @@ export default {
       addedTesters: [],
     };
   },
-  computed: {
-    //get from state
-    ...mapGetters({
-      testers: "testers",
-      projects: "projects",
-    }),
-  },
   methods: {
-    //fetch from db
-    ...mapActions([
-      "fetchTesters",
-      "fetchProjects",
-      "updateProject",
-      "removeProject",
-    ]),
-    getSingleProject() {
-      //get tester by slug
-      let slug = this.$route.params.project_slug;
-      this.project = this.projects.find((project) => {
-        return project.slug === slug;
-      });
-      console.log("project", this.project);
-    },
-    editProject() {
+    updateProject() {
       // // required???
       if (this.project.name) {
         //slug with slugify
@@ -163,26 +139,27 @@ export default {
           remove: /[$*_+~.()'"!:@]/g,
           lower: true,
         });
+        this.feedback = null;
         //sätt firebase timestamp
+        let myTimestamp = firestore.Timestamp.fromDate(new Date());
+        // console.log("Date", myTimestamp);
 
-        const updatedProject = {
-          name: this.project.name,
-          description: this.project.description,
-          id: this.project.id,
-          slug: this.project.slug,
-        };
-        this.updateProject(updatedProject);
-        console.log("hej");
-        // //uppdatera detta projekt
-        // db.collection("projects")
-        //   //this.project.id = doc.id from created()
-        //   .doc(updatedProject.id)
-        //   .update(updatedProject)
-        //   .then(() => {});
-
-        //this.$router.push({ name: "Home" });
+        //uppdatera detta projekt
+        db.collection("projects")
+          //this.project.id = doc.id from created()
+          .doc(this.project.id)
+          .update({
+            name: this.project.name,
+            description: this.project.description,
+            lastUpdated: myTimestamp,
+            slug: this.project.slug,
+          })
+          .then(() => {
+            this.$router.push({ name: "Home" });
+          });
       } else {
         this.$toastr.e("Please fill in project name.");
+        //this.feedback = "Please fill in project name.";
       }
     },
 
@@ -191,6 +168,8 @@ export default {
       //om projekt-id:t redan finns på vald testare i db, men jag byter roll, byt rollen på projektet.
       //om projekt-id:t redan finns på vald testare i db, så ska det inte gå att lägga till det projektet igen.
       if (this.selectedTester) {
+        this.feedback = null;
+
         //hitta vald testare i dropdown på id:t
         let currentTester = this.testers.find((tester) => {
           return tester.id == this.selectedTester;
@@ -239,6 +218,7 @@ export default {
         //tillagt
       } else {
         this.$toastr.e("Please choose Tester and Role.");
+        // this.feedback = "Please choose Tester and Role.";
       }
       // this.selectedTester = null;
       // this.selectedRole = null;
@@ -308,44 +288,68 @@ export default {
           // console.log("delete project");
           this.$router.push({ name: "Home" });
         });
+
+      // let testProjectList = [
+      //   { id: 1, role: "owner" },
+      //   { id: 2, role: "owner" },
+      // ];
+      // let testerProjects = this.testers[0].projects;
+      // let filteredProjects = testerProjects.filter((project) => {
+      //   return project.id !== 1;
+      // });
+      // console.log("filteredProjects", filteredProjects);
+
+      // // db.collection("testers")
+      // //   .document()
+      // //   .updateData({
+      // //     projects: FieldValue.arrayRemove([{}.remove(1)]),
+      // //   });
+
+      // //uppdatera testarens projektlista
+      // db.collection("testers")
+      //   .get()
+      //   .then(function(querySnapshot) {
+      //     console.log("querySnapshot", querySnapshot);
+      //     querySnapshot.forEach(function(doc) {
+      //       doc.ref.update({
+      //         projects: testProjectList,
+      //       });
+      //     });
+      //   });
     },
   },
   created() {
-    this.fetchTesters();
-    this.fetchProjects();
-    this.getSingleProject();
+    //1.  get this project by the slug, we dont have the id
+    db.collection("projects")
+      .where("slug", "==", this.$route.params.project_slug)
+      //get the data (should be just one, but stored in a collection)
+      .get()
+      .then((snapshot) => {
+        snapshot.forEach((doc) => {
+          this.project = doc.data(); //all the data in this project
+          //id is in the doc
+          console.log("project", this.project);
 
-    // //1.  get this project by the slug, we dont have the id
-    // db.collection("projects")
-    //   .where("slug", "==", this.$route.params.project_slug)
-    //   //get the data (should be just one, but stored in a collection)
-    //   .get()
-    //   .then((snapshot) => {
-    //     snapshot.forEach((doc) => {
-    //       this.project = doc.data(); //all the data in this project
-    //       //id is in the doc
-    //       console.log("project", this.project);
+          this.project.id = doc.id;
+          //console.log("id", this.project.id);
+        });
+      });
 
-    //       this.project.id = doc.id;
-    //       //console.log("id", this.project.id);
-    //     });
-    //   });
-
-    // //fetch whole testers collection
-    // db.collection("testers")
-    //   .get()
-    //   .then((snapshot) => {
-    //     snapshot.forEach((doc) => {
-    //       let tester = doc.data(); //all the data in all testers
-    //       //lägger tillfälligt doc.id i testers för att ha tillgång till det även om det eg ligger en nivå upp
-    //       tester.id = doc.id;
-    //       //  console.log("id", tester.id);
-    //       this.testers.push(tester);
-    //       //  console.log("testers", this.testers);
-    //     });
-    //     //teatare och projekt måste vara laddade för att listan ska finnas vid reload
-    //     this.updateTesterUiList();
-    //   });
+    //fetch whole testers collection
+    db.collection("testers")
+      .get()
+      .then((snapshot) => {
+        snapshot.forEach((doc) => {
+          let tester = doc.data(); //all the data in all testers
+          //lägger tillfälligt doc.id i testers för att ha tillgång till det även om det eg ligger en nivå upp
+          tester.id = doc.id;
+          //  console.log("id", tester.id);
+          this.testers.push(tester);
+          //  console.log("testers", this.testers);
+        });
+        //teatare och projekt måste vara laddade för att listan ska finnas vid reload
+        this.updateTesterUiList();
+      });
   },
   mounted() {
     // You are able to access plugin from everywhere via this.$toastr

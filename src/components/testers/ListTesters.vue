@@ -71,6 +71,7 @@ export default {
   },
   //getters in computed
   computed: {
+    //get from state
     ...mapGetters({
       testers: "testers",
     }),
@@ -78,8 +79,9 @@ export default {
     //   return this.$store.getters["testers"];
     // },
   },
+  //actions in methods
   methods: {
-    //actions in methods
+    //fetch from db
     ...mapActions(["fetchTesters"]),
     // fetchTesters() {
     //   this.$store.dispatch("fetchTesters");
