@@ -347,7 +347,7 @@ export default {
           this.testers.push(tester);
           //  console.log("testers", this.testers);
         });
-        //teatare och projekt måste vara laddade för att listan ska finnas vid reload
+        //testare och projekt måste vara laddade för att listan ska finnas vid reload
         this.updateTesterUiList();
       });
   },

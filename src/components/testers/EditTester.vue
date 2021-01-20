@@ -134,6 +134,7 @@ export default {
           slug: this.tester.slug,
           id: this.tester.id,
         };
+        //calling action in store
         this.updateTester(updatedTester);
         this.$router.push({ name: "Home" });
       } else {

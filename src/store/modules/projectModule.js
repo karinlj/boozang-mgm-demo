@@ -40,7 +40,7 @@ export const projectModule = {
       db.collection("projects")
         .add(projectData)
         .then(() => {
-          context.commit("addProjectToDb", {
+          context.commit("addProjectToGui", {
             //take all props and merge them into a new object
             ...projectData,
           });
@@ -69,9 +69,9 @@ export const projectModule = {
           });
         });
     },
-    removeProject(context, payload) {
-      console.log("payload", payload);
-    },
+    // removeProject(context, payload) {
+    //   console.log("payload", payload);
+    // },
   },
 
   mutations: {
@@ -79,7 +79,7 @@ export const projectModule = {
       // console.log("get_projects", payload);
       state.projects = payload;
     },
-    addProjectToDb: (state, payload) => {
+    addProjectToGui: (state, payload) => {
       state.projects = [payload, ...state.projects];
     },
     updProjectInGui: (state, payload) => {
@@ -91,8 +91,8 @@ export const projectModule = {
       state.projects.splice(index, 1, payload);
       console.log("updProjectInGui_after_func", state.projects);
     },
-    removeProjectFromGui(state, payload) {
-      console.log("removeProjectFromGui", payload);
-    },
+    // removeProjectFromGui(state, payload) {
+    //   console.log("removeProjectFromGui", payload);
+    // },
   },
 };

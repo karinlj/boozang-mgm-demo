@@ -52,7 +52,7 @@ export const testerModule = {
         .add(testerData)
         //do something when todo is added
         .then(() => {
-          context.commit("addTesterToGui", {
+          context.commit("addTesterInGui", {
             //take all props and merge them into a new object
             ...testerData,
           });
@@ -96,6 +96,45 @@ export const testerModule = {
         })
         .catch((error) => console.error("error", error));
     },
+    //projects on tester
+    addProjectOnTester(context, payload) {
+      console.log("currentProjects_payload[0])", payload[0]);
+      console.log("id_payload[1])", payload[1]);
+
+      let currentProjects = payload[0];
+      let id = payload[1];
+
+      db.collection("testers")
+        //grab the doc and update it
+        .doc(id)
+        .update({
+          projects: currentProjects,
+        })
+        .then(() => {
+          context.commit("addProjectOnTesterInGui", {
+            ...currentProjects,
+          });
+        })
+        .catch((error) => console.error("error", error));
+    },
+    //projects on tester
+    removeProjectOnTester(context, payload) {
+      let testerProjects = payload[0];
+      let id = payload[1];
+
+      db.collection("testers")
+        //grab the doc and update it
+        .doc(id)
+        .update({
+          projects: testerProjects,
+        })
+        .then(() => {
+          context.commit("removeProjectOnTesterFromGui", {
+            ...testerProjects,
+          });
+        })
+        .catch((error) => console.error("error", error));
+    },
   },
   //change the state
   //state 1st argument
@@ -105,11 +144,10 @@ export const testerModule = {
       //console.log("get_testers", payload);
       state.testers = payload;
     },
-    addTesterToGui(state, payload) {
+    addTesterInGui: (state, payload) => {
       state.testers = [payload, ...state.testers];
     },
     updTesterInGui: (state, payload) => {
-      //console.log("updTesterInDb", state.testers, payload);
       const index = state.testers.findIndex((tester) => {
         return tester.id === payload.id;
       });
@@ -120,12 +158,21 @@ export const testerModule = {
       }
       // console.log("updTesterInDb", payload);
     },
+
     removeTesterFromGui(state, payload) {
-      // console.log("removeTesterFromGui", payload);
+      console.log("removeTesterFromGui", payload);
       state.testers = state.testers.filter((tester) => {
         return tester.id !== payload;
       });
       console.log("removeTesterFromGui", state.testers);
+    },
+
+    //projects on tester
+    addProjectOnTesterInGui: (state, payload) => {
+      console.log("addProjectOnTesterInGui", state.testers, payload);
+    },
+    removeProjectOnTesterFromGui(state, payload) {
+      console.log("removeProjectOnTesterFromGui", payload);
     },
   },
 };
