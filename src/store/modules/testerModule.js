@@ -98,9 +98,6 @@ export const testerModule = {
     },
     //projects on tester
     addProjectOnTester(context, payload) {
-      console.log("currentProjects_payload[0])", payload[0]);
-      console.log("id_payload[1])", payload[1]);
-
       let currentProjects = payload[0];
       let id = payload[1];
 
@@ -136,8 +133,7 @@ export const testerModule = {
         .catch((error) => console.error("error", error));
     },
   },
-  //change the state
-  //state 1st argument
+  //change the state,   state 1st argument
   mutations: {
     //take the response (array of testers) and add to the state
     setTesters: (state, payload) => {
@@ -151,12 +147,10 @@ export const testerModule = {
       const index = state.testers.findIndex((tester) => {
         return tester.id === payload.id;
       });
-      //console.log("index", index);
       if (index !== -1) {
         //At position index, remove 1 item and add the updatedTodo
         state.testers.splice(index, 1, payload);
       }
-      // console.log("updTesterInDb", payload);
     },
 
     removeTesterFromGui(state, payload) {
@@ -168,8 +162,9 @@ export const testerModule = {
     },
 
     //projects on tester
+    //not used at the moment
     addProjectOnTesterInGui: (state, payload) => {
-      console.log("addProjectOnTesterInGui", state.testers, payload);
+      console.log("addProjectOnTesterInGui", payload);
     },
     removeProjectOnTesterFromGui(state, payload) {
       console.log("removeProjectOnTesterFromGui", payload);

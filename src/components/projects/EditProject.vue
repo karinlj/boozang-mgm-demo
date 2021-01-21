@@ -28,7 +28,7 @@
             <div class="field col s6">
               <!-- select tester for this project -->
               <label for="add-tester">Tester:</label>
-              <select name="add-tester" v-model="selectedTester">
+              <select name="add-tester" v-model="selectedTesterId">
                 <option value="" disabled selected>Choose tester</option>
                 <option
                   v-for="(tester, index) in testers"
@@ -69,7 +69,7 @@
                   </tr>
                 </thead>
                 <tbody>
-                  <tr v-for="(tester, index) in addedTesters" :key="index">
+                  <tr v-for="(tester, index) in testersOnProject" :key="index">
                     <td>
                       <p class="btn btn-floating blue">
                         {{ tester.firstname[0] }}{{ tester.lastname[0] }}
@@ -101,7 +101,6 @@
     </form>
   </div>
 </template>
-
 <script>
 import slugify from "slugify";
 import db from "@/firebase/init";
@@ -116,7 +115,7 @@ export default {
     return {
       //store the db-answer from created() in project
       project: null,
-      selectedTester: null,
+      selectedTesterId: null,
       selectedRole: null,
       roles: [
         "CI",
@@ -127,7 +126,7 @@ export default {
         "Team Lead",
         "QA",
       ],
-      addedTesters: [],
+      testersOnProject: [],
     };
   },
   computed: {
@@ -178,28 +177,21 @@ export default {
       //skicka project.id och roll till rätt testare.id
       //om projekt-id:t redan finns på vald testare i db, men jag byter roll, byt rollen på projektet.
       //om projekt-id:t redan finns på vald testare i db, så ska det inte gå att lägga till det projektet igen.
-      if (this.selectedTester) {
+      if (this.selectedTesterId) {
         //hitta vald testare i dropdown på id:t
         let currentTester = this.testers.find((tester) => {
-          return tester.id == this.selectedTester;
+          return tester.id == this.selectedTesterId;
         });
-        // console.log("currentTester", currentTester.id);
-
-        //vald testares projekt i db
         let currentProjects = currentTester.projects;
-        // console.log("currentProjects", currentProjects);
-
+        //initalize to false
         let projectExists = false;
-        //loopa vald testares projekt i db
         currentProjects.forEach((project) => {
-          //console.log("project", project);
-
           //kolla om project.id redan finns i db
           if (project.id == this.project.id) {
             projectExists = true;
             //byt bara roll
             project.role = this.selectedRole;
-            console.log("projectExists");
+            //console.log("projectExists");
           }
         });
         //om projekt.id:t inte redan finns i db: pusha projektet till projektlistan
@@ -211,35 +203,31 @@ export default {
             role: this.selectedRole,
           };
           currentProjects.push(newProject);
-          //console.log("currentProjects", currentProjects);
         }
         const payload = [currentProjects, currentTester.id];
-
         //call tester-action
         this.addProjectOnTester(payload);
-        this.updateTesterUiList();
-        this.$toastr.s("Project updated");
+        this.addTesterToUiList();
+        this.$toastr.s("Project on tester added");
       } else {
         this.$toastr.e("Please choose Tester and Role.");
       }
     },
-    updateTesterUiList() {
+    addTesterToUiList() {
       //uppdatera GUI-listan med testare även när man laddar om och inte valt något nytt
       //testare och projekt måste vara laddade för att listan ska finnas vid reload
-      //updateTesterUiList() kallas på i then() i updateTester() och i created() när testare är hämtade
+      //addTesterToUiList() kallas på i handleAdd() och i created()
 
       //loopa igenom testarna i db
       //kolla i respektive projektlista om den har detta projekt
       //lägg dessa testare i GUI-listan
-      //annars loopa över listan med if-satser
-      //bara output i UI
-      this.addedTesters = this.testers.filter((tester) => {
+      this.testersOnProject = this.testers.filter((tester) => {
         return tester.projects.find((project) => {
           return project.id == this.project.id;
           //(blir bara ett projekt ju per tester här)
         });
       });
-      // console.log("addedTesters", this.addedTesters);
+      console.log("testersOnProject_add", this.testersOnProject);
     },
     handleDelete(id) {
       //hitta testare i GUI-listan man klickat på
@@ -255,21 +243,19 @@ export default {
       //call tester-action
       this.removeProjectOnTester(payload);
       this.deleteTesterFromUiList(id);
-      this.$toastr.s("Project updated");
+      this.$toastr.s("Project on tester deleted");
     },
     deleteTesterFromUiList(id) {
-      //uppdatera addedTesters
-      this.addedTesters = this.addedTesters.filter((tester) => {
-        //return bara de testare som inte har id:t vi klickat på
+      this.testersOnProject = this.testersOnProject.filter((tester) => {
         return tester.id !== id;
       });
+      console.log("testersOnProject_delete", this.testersOnProject);
     },
     cancel() {
       this.$router.push({ name: "Home" });
     },
-    //funkar ej nu
+    //does not work right now
     deleteProject(id) {
-      // console.log("project.id", id);
       //uppdatera projekt-tabellen
       //uppdatera flera testares projektlista
 
@@ -286,11 +272,7 @@ export default {
     this.fetchTesters();
     this.fetchProjects();
     this.getSingleProject();
-    this.updateTesterUiList();
-
-    //console.log(" this.project", this.project);
-    // console.log(" this.testers", this.testers);
-    // console.log(" this.projects", this.projects);
+    this.addTesterToUiList();
   },
   mounted() {
     // You are able to access plugin from everywhere via this.$toastr
