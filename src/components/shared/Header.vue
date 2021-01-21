@@ -9,15 +9,6 @@
       {{ btnName }}
     </router-link>
   </header>
-  <!-- <header class="list_header">
-        <h5 class="blue-text">Team members</h5>
-        <router-link
-          :to="{ name: 'AddTester' }"
-          class="btn-small green accent-4"
-        >
-          Add Team member
-        </router-link>
-      </header> -->
 </template>
 
 <script>
@@ -60,6 +51,7 @@ export default {
   margin-bottom: 0.5rem;
   h5 {
     margin-top: 0;
+    max-width: 50%;
   }
 }
 </style>

@@ -8,7 +8,7 @@
         btnName="Add Team member"
       ></Header>
 
-      <table id="dashboard_table" class="responsive-table striped">
+      <table id="dashboard_table" class="table striped">
         <thead>
           <tr>
             <th></th>

@@ -4,7 +4,9 @@
     <form @submit.prevent="editProject" class="card-panel">
       <header class="edit_header">
         <h4 class="center-align purple-text">{{ project.name }}</h4>
-        <i class="material-icons red-text delete">delete</i>
+        <i class="material-icons red-text delete" title="Delete project"
+          >delete</i
+        >
       </header>
       <div class="row">
         <div class="field col s4">
@@ -50,7 +52,7 @@
             <div class="field col s1">
               <i
                 class="material-icons green-text add-tester"
-                title="Add Tester"
+                title="Add Project on Tester"
                 @click="handleAdd()"
                 >add_box</i
               >
@@ -80,6 +82,7 @@
                     <td>
                       <i
                         class="material-icons red-text delete"
+                        title="Remove Project on Tester"
                         @click="handleDelete(tester.id)"
                         >delete</i
                       >
@@ -283,7 +286,7 @@ export default {
 </script>
 
 <style lang="scss">
-.edit_project {
+.edit_header {
   .delete {
     cursor: pointer;
   }

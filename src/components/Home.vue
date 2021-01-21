@@ -2,11 +2,11 @@
   <div class="home">
     <div class="container">
       <div class="row">
-        <div class="col s12 m6">
+        <div class="col s12 l6">
           <ListTesters></ListTesters>
         </div>
 
-        <div class="col s12 m6">
+        <div class="col s12 l6">
           <ListProjects></ListProjects>
         </div>
 
@@ -17,7 +17,7 @@
         <div class="col s12 m6 l3">
           <BugReports></BugReports>
         </div>
-        <div class="col s12 m6">
+        <div class="col s12 l6">
           <ListTests></ListTests>
         </div>
       </div>

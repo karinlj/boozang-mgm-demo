@@ -6,11 +6,13 @@
         <h4 class="center-align blue-text">
           {{ tester.firstname + " " + tester.lastname }}
         </h4>
-        <i class="material-icons red-text" @click="deleteTester(tester.id)"
+        <i
+          class="material-icons red-text delete"
+          title="Delete tester"
+          @click="deleteTester(tester.id)"
           >delete</i
         >
       </header>
-      <!-- <p>{{ testers }}</p> -->
 
       <div class="row">
         <div class="field col s6">

@@ -3,7 +3,7 @@
     <div class="card-content">
       <Header headingColor="cyan-text" heading="Test executions"></Header>
 
-      <table id="dashboard_table" class="responsive-table striped">
+      <table id="dashboard_table" class="table striped">
         <thead>
           <tr>
             <th>Name</th>

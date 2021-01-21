@@ -2,15 +2,19 @@
   <div class="navbar">
     <nav class="blue">
       <div class="container">
-        <router-link :to="{ name: 'Home' }" class="brand-logo left">
-          My Company
-        </router-link>
+        <div class="row">
+          <div class="col s12">
+            <router-link :to="{ name: 'Home' }" class="brand-logo left">
+              My Company
+            </router-link>
 
-        <ul class="right">
-          <li>
-            <a href="">Some link</a>
-          </li>
-        </ul>
+            <ul class="right">
+              <li>
+                <a href="">Login</a>
+              </li>
+            </ul>
+          </div>
+        </div>
       </div>
     </nav>
   </div>
@@ -37,21 +41,18 @@ export default {
     @media all and (min-width: 576px) {
       height: auto;
     }
-    padding: 0 20px;
+    padding: 0 0.75rem;
     .brand-logo {
       position: relative;
     }
     .container {
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      @media all and (min-width: 576px) {
-        flex-direction: row;
-      }
-      padding: 0 0.75rem;
-      max-width: 1300px;
       @media all and (min-width: 993px) {
         width: 90%;
+      }
+    }
+    ul {
+      a {
+        padding-right: 0;
       }
     }
   }
