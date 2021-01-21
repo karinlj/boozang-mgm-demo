@@ -145,7 +145,7 @@ export default {
       "fetchTesters",
       "fetchProjects",
       "updateProject",
-      "addProjectOnTester",
+      "updateProjectsOnTester",
       "removeProjectOnTester",
     ]),
     getSingleProject() {
@@ -209,7 +209,7 @@ export default {
         }
         const payload = [currentProjects, currentTester.id];
         //call tester-action
-        this.addProjectOnTester(payload);
+        this.updateProjectsOnTester(payload);
         this.addTesterToUiList();
         this.$toastr.s("Project on tester added");
       } else {
@@ -230,7 +230,7 @@ export default {
           //(blir bara ett projekt ju per tester här)
         });
       });
-      console.log("testersOnProject_add", this.testersOnProject);
+      //console.log("testersOnProject_add", this.testersOnProject);
     },
     handleDelete(id) {
       //hitta testare i GUI-listan man klickat på
@@ -252,7 +252,7 @@ export default {
       this.testersOnProject = this.testersOnProject.filter((tester) => {
         return tester.id !== id;
       });
-      console.log("testersOnProject_delete", this.testersOnProject);
+      //console.log("testersOnProject_delete", this.testersOnProject);
     },
     cancel() {
       this.$router.push({ name: "Home" });
@@ -286,10 +286,7 @@ export default {
 </script>
 
 <style lang="scss">
-.edit_header {
-  .delete {
-    cursor: pointer;
-  }
+.edit_project {
   .name {
     margin-bottom: 3rem;
   }

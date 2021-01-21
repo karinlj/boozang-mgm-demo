@@ -97,13 +97,13 @@ export const testerModule = {
         .catch((error) => console.error("error", error));
     },
     //projects on tester
-    addProjectOnTester(context, payload) {
+    updateProjectsOnTester(context, payload) {
       let currentProjects = payload[0];
-      let id = payload[1];
-
+      let tester_id = payload[1];
+      //console.log("updateProjectsOnTester", currentProjects, tester_id);
       db.collection("testers")
         //grab the doc and update it
-        .doc(id)
+        .doc(tester_id)
         .update({
           projects: currentProjects,
         })
@@ -117,11 +117,11 @@ export const testerModule = {
     //projects on tester
     removeProjectOnTester(context, payload) {
       let testerProjects = payload[0];
-      let id = payload[1];
+      let tester_id = payload[1];
 
       db.collection("testers")
         //grab the doc and update it
-        .doc(id)
+        .doc(tester_id)
         .update({
           projects: testerProjects,
         })
@@ -164,7 +164,7 @@ export const testerModule = {
     //projects on tester
     //not used at the moment
     addProjectOnTesterInGui: (state, payload) => {
-      console.log("addProjectOnTesterInGui", payload);
+      console.log("addProjectOnTesterInGui_currentProjects", payload);
     },
     removeProjectOnTesterFromGui(state, payload) {
       console.log("removeProjectOnTesterFromGui", payload);

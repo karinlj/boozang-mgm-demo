@@ -60,5 +60,10 @@ export default {
   .overflow-hidden {
     overflow: hidden;
   }
+  .edit_header {
+    .delete {
+      cursor: pointer;
+    }
+  }
 }
 </style>
